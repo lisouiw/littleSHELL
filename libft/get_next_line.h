@@ -1,27 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/06/30 13:21:46 by ltran            ###   ########.fr       */
+/*   Created: 2017/01/18 00:39:56 by ltran             #+#    #+#             */
+/*   Updated: 2017/01/18 00:45:06 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
 
+#define BUFF_SIZE 4
+
+#include "./libft/libft.h"
+#include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include "libft/libft.h"
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+
+int		get_next_line(int fd, char **line);
+char	*ft_no(int fd, char *buf, int num, int r);
+int		ft_read(int fd, char *buf, int r);
 
 #endif
