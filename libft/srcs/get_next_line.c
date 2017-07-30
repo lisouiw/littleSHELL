@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "../get_next_line.h"
 
 char	*ft_no(int fd, char *buf, int num, int r)
 {

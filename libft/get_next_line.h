@@ -13,9 +13,9 @@
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-#define BUFF_SIZE 4
+#define BUFF_SIZE 100
 
-#include "./libft/libft.h"
+#include "libft.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>

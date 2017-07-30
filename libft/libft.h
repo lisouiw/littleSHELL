@@ -13,15 +13,13 @@
 #ifndef LIBFT_H
 # define LIBFT_H
 
-
-#define BUFF_SIZE 4
-
 # include <unistd.h>
 # include <stdlib.h>
 # include <sys/types.h>
 # include <sys/uio.h>
 # include <stdio.h>
 # include <string.h>
+# include "get_next_line.h"
 
 typedef struct		s_list
 {
@@ -101,15 +99,6 @@ void				ft_lstdel(t_list **alst, void (*del)(void *, size_t));
 void				ft_lstadd(t_list **alst, t_list *new);
 void				ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list				*ft_lstmap(t_list *lst, t_list*(f)(t_list *elem));
-
-
-//#include <fcntl.h>
-//#include <unistd.h>
-//#include <stdio.h>
-
 int					get_next_line(int fd, char **line);
-char				*ft_no(int fd, char *buf, int num, int r);
-int					ft_read(int fd, char *		buf, int r);
-
 
 #endif

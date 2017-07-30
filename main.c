@@ -17,26 +17,6 @@
 /*
 int		main(int ac, char **av)
 {
-	pid_t	father;
-	int		a;
-
-	father = fork();
-	if (father > 0)
-	{
-		wait(&a);
-		printf("COUCOU\n");
-	}
-	if (father == 0)
-	{
-		sleep(1);
-		execve("/bin/ls", av, NULL);
-//	}
-	return (0);
-}*/
-
-/*
-int		main(int ac, char **av)
-{
 	char		*buf;
 	int			w;
 	int		i;
@@ -72,31 +52,11 @@ int		main(int ac, char **av)
 	return (0);
 }*/
 
-/*
-int		main(int ac, char **av)
+void	double_char(char **ar, int i)
 {
-	int		w;
-	pid_t		father;
-
-	father = fork();
-
-	if (father > 0)
-	{
-		printf("PAPA = %i\n", father);
-	}
-	if (father == 0)
-	{
-		printf("fils = %i\n", father);
-		execve("/bin/ls", av, NULL);
-	}
-	father = fork();
-	if (father > 0)
-		waitpid(father, &w, 0);
-	else 
-		waitpid(father, &w, 0);
-	return (0);
+	while (ar[++i])
+		ft_putendl(ar[i]);
 }
-*/
 
 char	**strcmp_len(char *len, char *str)
 {
@@ -117,13 +77,20 @@ char	**strcmp_len(char *len, char *str)
 int		main(int argc, char **argv, char **env)
 {
 	char	*line;
-	int		i = 0;
-	int		w;
+	int	i = 0;
+	int	w;
 	char	*cm;
 	pid_t	father;
+	char	buf[BUFF_SIZE];
 
+//	getcwd(buf, BUFF_SIZE);
+//	chdir("..");
+//	printf("BUF -> %s\n", buf);
 	while (env[i] && (argv = strcmp_len("PATH=", env[i])) == NULL)
 		++i;
+//	i = -1;
+//	while (argv[++i])
+//		printf("-> %s\n", argv[i]);
 	while (42)
 	{
 		ft_putstr("(.Y.)> ");
@@ -132,35 +99,24 @@ int		main(int argc, char **argv, char **env)
 		else
 		{
 			argv = ft_strsplit(line, ' ');
-			cm = ft_strjoin("/bin/", argv[0]);
-			father = fork();
-			waitpid(father, &w, 0);
-			if (father == 0)
-				execve(cm, argv, NULL);
+			if (strcmp_len("env", argv[0]) != NULL)
+				double_char(env, -1);
+			else if (strcmp_len("echo", argv[0]) != NULL)
+				s_echo(env, -1);
+			else
+			{
+				cm = ft_strjoin("/bin/", argv[0]);
+				father = fork();
+				waitpid(father, &w, 0);
+				if (father == 0)
+					execve(cm, argv, NULL);
+			}
+			free(argv);
+			free(line);
 		}
 	}
 	return (0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
