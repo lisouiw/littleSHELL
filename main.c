@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/06/30 14:25:39 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/01 05:29:26 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,46 @@ int		main(int ac, char **av)
 //	}
 	return (0);
 }*/
+int		len_double(char **ar, int i)
+{
+	int		len;
+
+	len = 0;
+	while (ar[++i])
+		++len;
+	return (len);
+}
+
+void	b_echo(char **line, int i)
+{
+	int		a;
+
+	a = len_double(line, -1);
+	if (a == 0)
+		write(1, "\n", 1);
+	if ((line[1][0] == '"' && line[a][ft_strlen(line[a])-1] == '"') ||
+		(line[1][0] == 39 && line[a][ft_strlen(line[a])-1] == 39))
+	{
+		line[a][ft_strlen(line[a])-1] = '\n';
+		ft_putstr(&line[1][1]);
+		while (line[++i])
+		{
+			write(1, " ", 1);
+			ft_putstr(line[i]);
+		}
+	}
+	else
+		ft_putendl(line[a]);
+}
 
 void	double_char(char **ar, int i)
 {
+
 	while (ar[++i])
 		ft_putendl(ar[i]);
 }
 
-char	**strcmp_len(char *len, char *str)
+char	*line_split(char *len, char *str)
 {
 	int		i;
 
@@ -69,28 +101,66 @@ char	**strcmp_len(char *len, char *str)
 	{
 		while (--i != -1)
 			++str;
-		return (ft_strsplit(str, ':'));
+		return (str);
 	}
 	return (NULL);
+}
+
+void	b_cd(char **way, char *home, char *pwd)
+{
+	int		a;
+	pid_t	father;
+	char	buf[101];
+
+	printf("PWD = %s HOME %s\n", pwd, home);
+//cd: not a directory: [file]
+//cd : no such file or directory: [file]
+	getcwd(buf, 100);
+	printf("BUF = %s\n", buf);
+	if ((a = len_double(way,0) == 2))
+	{
+		ft_putstr("cd : string not in pwd : ");
+		ft_putendl(way[1]);
+	}
+	if (a > 2)
+		ft_putstr("cd : too many arguments\n");
+	if (a == 0)
+	{
+		if (ft_strlen(home) > ft_strlen(pwd))
+			chdir(pwd);
+		else
+		{
+			chdir("/Users/ltran/littleSHELL/libft/");
+		}
+	}
+	//modifier le env
 }
 
 int		main(int argc, char **argv, char **env)
 {
 	char	*line;
-	int	i = 0;
-	int	w;
+	int		i;
+	int		w;
 	char	*cm;
 	pid_t	father;
-	char	buf[BUFF_SIZE];
+	char	**path = NULL;
+	char	*home;
+	char	*pwd;
 
-//	getcwd(buf, BUFF_SIZE);
+
+	i = 0;
 //	chdir("..");
 //	printf("BUF -> %s\n", buf);
-	while (env[i] && (argv = strcmp_len("PATH=", env[i])) == NULL)
+	while (env[i] && !(path = ft_strsplit(line_split("PATH=", env[i]), ':')))
 		++i;
-//	i = -1;
-//	while (argv[++i])
-//		printf("-> %s\n", argv[i]);
+	i = 0;
+	while (env[i] && !(home = line_split("HOME=", env[i])))
+		++i;
+	i = 0;
+	while (env[i] && !(pwd = line_split("PWD=", env[i])))
+		++i;
+//	while (path[++i])
+//		printf("-> %s\n", path[i]);
 	while (42)
 	{
 		ft_putstr("(.Y.)> ");
@@ -98,11 +168,14 @@ int		main(int argc, char **argv, char **env)
 			exit(0);
 		else
 		{
+			i = -1;
 			argv = ft_strsplit(line, ' ');
-			if (strcmp_len("env", argv[0]) != NULL)
+			if (line_split("env", argv[0]) != NULL)
 				double_char(env, -1);
-			else if (strcmp_len("echo", argv[0]) != NULL)
-				s_echo(env, -1);
+			if (line_split("echo", argv[0]) != NULL)
+				b_echo(argv, 1);
+			if (line_split("cd", argv[0]) != NULL)
+				b_cd(argv, home, pwd);
 			else
 			{
 				cm = ft_strjoin("/bin/", argv[0]);
@@ -111,8 +184,8 @@ int		main(int argc, char **argv, char **env)
 				if (father == 0)
 					execve(cm, argv, NULL);
 			}
-			free(argv);
-			free(line);
+		//	free(argv);
+		//	free(line);
 		}
 	}
 	return (0);
