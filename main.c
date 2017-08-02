@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/01 05:29:26 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/02 18:07:28 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,28 +111,44 @@ void	b_cd(char **way, char *home, char *pwd)
 	int		a;
 	pid_t	father;
 	char	buf[101];
+	int		i;
+	char	*str;
 
-	printf("PWD = %s HOME %s\n", pwd, home);
+//need modification du env a chaque desplacement
 //cd: not a directory: [file]
 //cd : no such file or directory: [file]
+//cd ~(HOME) | cd - (switch previous dir) |cd ~ltran
+//no need modifier { cd / |
+//cd ~user |cd / Users/login|
 	getcwd(buf, 100);
-	printf("BUF = %s\n", buf);
-	if ((a = len_double(way,0) == 2))
+	printf("PWD/BUF = %s HOME %s\n", pwd, home);
+	str = ft_strjoin(ft_strjoin(buf, "/"), way[1]);
+	if (opendir(str))
+		printf("YATA\n");
+	else
+		printf("NO EXIST\n");
+	if ((a = len_double(way,0)) == 2)
 	{
+	printf("A %i\n", a);
 		ft_putstr("cd : string not in pwd : ");
 		ft_putendl(way[1]);
 	}
+	printf("A %i\n", a);
 	if (a > 2)
 		ft_putstr("cd : too many arguments\n");
 	if (a == 0)
 	{
 		if (ft_strlen(home) > ft_strlen(pwd))
 			chdir(pwd);
-		else
-		{
-			chdir("/Users/ltran/littleSHELL/libft/");
-		}
 	}
+	if (a == 1)
+	{
+		if (ft_strcmp(way[1], "/") == 0)
+			chdir("/");
+		else
+			chdir(str);
+	}
+
 	//modifier le env
 }
 
