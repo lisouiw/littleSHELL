@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/02 18:07:28 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/03 15:20:45 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,11 @@ char	*line_split(char *len, char *str)
 	return (NULL);
 }
 
+void	b_export()
+{
+	//export NAME=name NAME=name
+}
+
 void	b_cd(char **way, char *home, char *pwd)
 {
 	int		a;
@@ -114,7 +119,7 @@ void	b_cd(char **way, char *home, char *pwd)
 	int		i;
 	char	*str;
 
-//need modification du env a chaque desplacement
+//need modification du env a chaque desplacement| pwd previous |
 //cd: not a directory: [file]
 //cd : no such file or directory: [file]
 //cd ~(HOME) | cd - (switch previous dir) |cd ~ltran
@@ -123,30 +128,37 @@ void	b_cd(char **way, char *home, char *pwd)
 	getcwd(buf, 100);
 	printf("PWD/BUF = %s HOME %s\n", pwd, home);
 	str = ft_strjoin(ft_strjoin(buf, "/"), way[1]);
-	if (opendir(str))
-		printf("YATA\n");
-	else
-		printf("NO EXIST\n");
+	if (!opendir(str))
+	{
+		if (open(str, O_RDONLY) == -1)
+			ft_putstr("cd : no such file or directory: [file]\n");
+		else
+			ft_putstr("cd : not a directory: [file]\n");
+	}
 	if ((a = len_double(way,0)) == 2)
 	{
-	printf("A %i\n", a);
+		printf("A %i\n", a);
 		ft_putstr("cd : string not in pwd : ");
 		ft_putendl(way[1]);
 	}
 	printf("A %i\n", a);
 	if (a > 2)
 		ft_putstr("cd : too many arguments\n");
-	if (a == 0)
+	if (a == 0 || a == 1 )
 	{
-		if (ft_strlen(home) > ft_strlen(pwd))
-			chdir(pwd);
-	}
-	if (a == 1)
-	{
-		if (ft_strcmp(way[1], "/") == 0)
-			chdir("/");
+		chdir("/");
+		if (a == 0 || ft_strcmp(way[1], "~") == 0 || ft_strcmp(way[1], "--") == 0)
+		{
+			printf("~\n");
+			chdir(home);
+		}
+	//	else if (ft_strcmp(way[1], "/") == 0)
+	//		printf("/\n");
 		else
+		{
+			printf("LET IT GO\n");
 			chdir(str);
+		}
 	}
 
 	//modifier le env
