@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/21 17:22:22 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/21 17:46:59 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ int		main(int ac, char **av)
 //	}
 	return (0);
 }*/
+
+
 int		len_double(char **ar, int i)
 {
 	int		len;
@@ -60,8 +62,6 @@ int		len_double(char **ar, int i)
 		++len;
 	return (len);
 }
-
-
 
 
 
@@ -146,15 +146,21 @@ void	double_char(char **ar, int i)
 		ft_putendl(ar[i]);
 }
 
+
+
 void	b_echo(char **line, int i)
 {
 	int		a;
 
-	a = len_double(line, -1);
-	if (a == 0)
+	a = 0;
+	while (line[++a])
+		;
+	printf("%i\n",a);
+	if (a == 1)
 		write(1, "\n", 1);
-	while((a = quote()) != 0)
-		a == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
+
+//	while((a = quote()) != 0)
+//		a == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
 }
 
 void	exec_cmd(char **line)
