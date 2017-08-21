@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/03 15:20:45 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/21 17:22:22 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,34 +61,9 @@ int		len_double(char **ar, int i)
 	return (len);
 }
 
-void	b_echo(char **line, int i)
-{
-	int		a;
 
-	a = len_double(line, -1);
-	if (a == 0)
-		write(1, "\n", 1);
-	if ((line[1][0] == '"' && line[a][ft_strlen(line[a])-1] == '"') ||
-		(line[1][0] == 39 && line[a][ft_strlen(line[a])-1] == 39))
-	{
-		line[a][ft_strlen(line[a])-1] = '\n';
-		ft_putstr(&line[1][1]);
-		while (line[++i])
-		{
-			write(1, " ", 1);
-			ft_putstr(line[i]);
-		}
-	}
-	else
-		ft_putendl(line[a]);
-}
 
-void	double_char(char **ar, int i)
-{
 
-	while (ar[++i])
-		ft_putendl(ar[i]);
-}
 
 char	*line_split(char *len, char *str)
 {
@@ -164,6 +139,40 @@ void	b_cd(char **way, char *home, char *pwd)
 	//modifier le env
 }
 
+void	double_char(char **ar, int i)
+{
+
+	while (ar[++i])
+		ft_putendl(ar[i]);
+}
+
+void	b_echo(char **line, int i)
+{
+	int		a;
+
+	a = len_double(line, -1);
+	if (a == 0)
+		write(1, "\n", 1);
+	while((a = quote()) != 0)
+		a == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
+}
+
+void	exec_cmd(char **line)
+{
+	if (ft_strcmp("echo", line[0]) == 0)
+		b_echo(line, 1);
+	if (ft_strcmp("env", line[0]) == 0)
+		;
+	if (ft_strcmp("export", line[0]) == 0)
+		;
+	if (ft_strcmp("unsetenv", line[0]) == 0)
+		;
+	if (ft_strcmp("cd", line[0]) == 0)
+		;
+	else
+		;
+}
+
 int		main(int argc, char **argv, char **env)
 {
 	char	*line;
@@ -175,29 +184,33 @@ int		main(int argc, char **argv, char **env)
 	char	*home;
 	char	*pwd;
 
-
-	i = 0;
-//	chdir("..");
-//	printf("BUF -> %s\n", buf);
-	while (env[i] && !(path = ft_strsplit(line_split("PATH=", env[i]), ':')))
-		++i;
-	i = 0;
-	while (env[i] && !(home = line_split("HOME=", env[i])))
-		++i;
-	i = 0;
-	while (env[i] && !(pwd = line_split("PWD=", env[i])))
-		++i;
-//	while (path[++i])
-//		printf("-> %s\n", path[i]);
+	//env recup avec liste chainee
 	while (42)
 	{
 		ft_putstr("(.Y.)> ");
 		if (get_next_line(0, &line) && ft_strcmp(line, "exit") == 0)
 			exit(0);
 		else
+			exec_cmd(/*argv = i*/ft_strsplit(line, ' '));
+	}
+	return (0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+		else
 		{
 			i = -1;
-			argv = ft_strsplit(line, ' ');
 			if (line_split("env", argv[0]) != NULL)
 				double_char(env, -1);
 			if (line_split("echo", argv[0]) != NULL)
@@ -215,20 +228,4 @@ int		main(int argc, char **argv, char **env)
 		//	free(argv);
 		//	free(line);
 		}
-	}
-	return (0);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+*/
