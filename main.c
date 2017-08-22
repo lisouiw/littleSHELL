@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/21 17:46:59 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/22 18:07:15 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,34 +146,55 @@ void	double_char(char **ar, int i)
 		ft_putendl(ar[i]);
 }
 
-
-
-void	b_echo(char **line, int i)
+void	my_strjoin(char **spc, char **line, int a)
 {
-	int		a;
+	char	*tmp;
 
-	a = 0;
-	while (line[++a])
-		;
-	printf("%i\n",a);
-	if (a == 1)
-		write(1, "\n", 1);
+	if (line[a] && !(line [a + 1]))
+		*spc = line[a];
+	while (line[a] && line [a + 1])
+	{
+		if (*spc != NULL)
+			tmp = ft_strjoin(*spc, " ");
+		else
+			tmp = ft_strjoin(line[a], " ");
+		*spc = ft_strjoin(tmp, line[a + 1]);
+	//	ft_putendl(*spc);
+		++a;
+	}
+}
 
-//	while((a = quote()) != 0)
-//		a == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
+
+
+void	b_echo(char **echo, int a)
+{
+	while (echo[a])
+	{
+		ft_putstr(echo[a]);
+		if (echo[++a])
+			ft_putchar(' ');
+	}
+	write(1, "\n", 1);
 }
 
 void	exec_cmd(char **line)
 {
-	if (ft_strcmp("echo", line[0]) == 0)
-		b_echo(line, 1);
-	if (ft_strcmp("env", line[0]) == 0)
+	char	*spc;
+	char	**cut;
+
+	spc = NULL;
+	my_strjoin(&spc, line, 0);
+	if(!(cut = strsplit_two_c(spc, '\t', ' ')) || !cut[0])
+		return;
+	if (ft_strcmp("echo", cut[0]) == 0)
+		b_echo(cut, 1);
+	if (ft_strcmp("env", cut[0]) == 0)
 		;
-	if (ft_strcmp("export", line[0]) == 0)
+	if (ft_strcmp("export", cut[0]) == 0)
 		;
-	if (ft_strcmp("unsetenv", line[0]) == 0)
+	if (ft_strcmp("unsetenv", cut[0]) == 0)
 		;
-	if (ft_strcmp("cd", line[0]) == 0)
+	if (ft_strcmp("cd", cut[0]) == 0)
 		;
 	else
 		;

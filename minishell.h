@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/02 17:30:27 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/22 16:22:30 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,5 +25,7 @@
 # include <fcntl.h>
 # include <sys/types.h>
 # include <dirent.h>
+
+char	**strsplit_two_c(char const *s, char c, char d);
 
 #endif
