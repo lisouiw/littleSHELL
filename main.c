@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/23 21:36:27 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/24 16:52:24 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,6 @@ int		len_double(char **ar, int i)
 		++len;
 	return (len);
 }
-
-
 
 char	*line_split(char *len, char *str)
 {
@@ -253,22 +251,61 @@ void	b_export(char **cut, t_env *env)
 void	b_unset(char **cut, t_env **env)
 {
 	int		i;
-	char	*nm;
+	t_env	*kp;
+	t_env	*sup;
 
 	i = 0;
 	while (cut[++i])
 	{
-		//61
+		kp = *env;
+		if (ft_strcmp(kp->name, cut[i]) == 61)
+		{
+			sup = kp;
+			*env = (*env)->next;
+			sup->name = NULL;
+			free(sup->name);
+			free(sup->ctn);
+			free(sup);
+			kp = *env;
+		}
+		else
+		{
+			while (kp->next != NULL && ft_strcmp(kp->next->name, cut[i]) != 61)
+				kp = kp->next;
+			if (ft_strcmp(kp->next->name, cut[i]) == 61)
+			{
+				printf("***%s %s\n", kp->next->name, kp->next->ctn);
+				sup = kp->next;
+				printf("***%s %s\n", sup->name, sup->ctn);
+				if (kp->next->next != NULL)
+				{
+					kp->next = kp->next->next;
+					sup->name = NULL;
+					sup->ctn = NULL;
+					free(sup->name);
+					free(sup->ctn);
+				}
+				else
+				{
+					printf("PD|?\n");
+					sup->name = NULL;
+					sup->ctn = NULL;
+					free(sup->name);
+					free(sup->ctn);
+					kp->next = NULL;
+				}
+			}
+		}
 	}
 	return;
 }
 
-void	exec_cmd(char *line, t_env *env)
+t_env	*exec_cmd(char *line, t_env *env)
 {
 	char	**cut;
 
 	if (!(cut = strsplit_two_c(line, '\t', ' ')) || !cut[0])
-		return;
+		return (env);
 	if (ft_strcmp("echo", cut[0]) == 0)
 	{
 		if (cut[1])
@@ -279,13 +316,19 @@ void	exec_cmd(char *line, t_env *env)
 	else if (ft_strcmp("env", cut[0]) == 0)
 		ecriture_info(env);
 	else if (ft_strcmp("export", cut[0]) == 0 && cut[1])
+	{
 		b_export(cut, env);
+	}
 	else if (ft_strcmp("unset", cut[0]) == 0)
+	{
 		b_unset(cut, &env);
+		ecriture_info(env);
+	}
 	else if (ft_strcmp("cd", cut[0]) == 0)
 		;
 	else
 		;
+	return (env);
 }
 
 t_env	*add_env(char *environ, t_env *env, size_t one, size_t all)
@@ -295,8 +338,8 @@ t_env	*add_env(char *environ, t_env *env, size_t one, size_t all)
 
 	tmp = env;
 	new = (t_env*)malloc(sizeof(t_env));
-	new->name = ft_strsub(environ, 0, all - one + 1);
-	new->ctn = ft_strsub(environ, all - one + 1, one -1);
+	new->name = (all == 0) ? NULL : ft_strsub(environ, 0, all - one + 1);
+	new->ctn = (all == 0) ? NULL : ft_strsub(environ, all - one + 1, one -1);
 	new->next = NULL;
 	if (env == NULL)
 	{
@@ -315,6 +358,7 @@ t_env	*give_env(t_env *env)
 	extern char		**environ;
 
 	env = (t_env*)malloc(sizeof(t_env));
+	env->next = NULL;
 	env = NULL;
 	i = -1;
 	while (environ[++i])
@@ -333,11 +377,11 @@ int		main(int argc, char **argv, char **env)
 	envs = give_env(NULL);
 	while (42)
 	{
-		ft_putstr("(.Y.)> ");
+		ft_putstr("(. Y .)> ");
 		if (get_next_line(0, &line) && ft_strcmp(line, "exit") == 0)
 			exit(0);
 		else
-			exec_cmd(line, envs);
+			envs = exec_cmd(line, envs);
 	}
 	return (0);
 }
