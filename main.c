@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/24 16:52:24 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/24 18:55:54 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ char	*line_split(char *len, char *str)
 	return (NULL);
 }
 
-
+/*
 void	b_cd(char **way, char *home, char *pwd)
 {
 	int		a;
@@ -129,9 +129,8 @@ void	b_cd(char **way, char *home, char *pwd)
 			chdir(str);
 		}
 	}
-
 	//modifier le env
-}
+}*/
 
 void	double_char(char **ar, int i)
 {
@@ -274,9 +273,7 @@ void	b_unset(char **cut, t_env **env)
 				kp = kp->next;
 			if (ft_strcmp(kp->next->name, cut[i]) == 61)
 			{
-				printf("***%s %s\n", kp->next->name, kp->next->ctn);
 				sup = kp->next;
-				printf("***%s %s\n", sup->name, sup->ctn);
 				if (kp->next->next != NULL)
 				{
 					kp->next = kp->next->next;
@@ -287,7 +284,6 @@ void	b_unset(char **cut, t_env **env)
 				}
 				else
 				{
-					printf("PD|?\n");
 					sup->name = NULL;
 					sup->ctn = NULL;
 					free(sup->name);
@@ -298,6 +294,11 @@ void	b_unset(char **cut, t_env **env)
 		}
 	}
 	return;
+}
+
+void	b_cd(char *cd, t_env **env)
+{
+	
 }
 
 t_env	*exec_cmd(char *line, t_env *env)
@@ -316,16 +317,14 @@ t_env	*exec_cmd(char *line, t_env *env)
 	else if (ft_strcmp("env", cut[0]) == 0)
 		ecriture_info(env);
 	else if (ft_strcmp("export", cut[0]) == 0 && cut[1])
-	{
 		b_export(cut, env);
-	}
 	else if (ft_strcmp("unset", cut[0]) == 0)
 	{
 		b_unset(cut, &env);
 		ecriture_info(env);
 	}
 	else if (ft_strcmp("cd", cut[0]) == 0)
-		;
+		b_cd(cut[1], &env);
 	else
 		;
 	return (env);
@@ -338,8 +337,8 @@ t_env	*add_env(char *environ, t_env *env, size_t one, size_t all)
 
 	tmp = env;
 	new = (t_env*)malloc(sizeof(t_env));
-	new->name = (all == 0) ? NULL : ft_strsub(environ, 0, all - one + 1);
-	new->ctn = (all == 0) ? NULL : ft_strsub(environ, all - one + 1, one -1);
+	new->name = ft_strsub(environ, 0, all - one + 1);
+	new->ctn = ft_strsub(environ, all - one + 1, one -1);
 	new->next = NULL;
 	if (env == NULL)
 	{
