@@ -298,7 +298,16 @@ void	b_unset(char **cut, t_env **env)
 
 void	b_cd(char *cd, t_env **env)
 {
-	
+	char	buf[126]; //test if len sup
+
+	getcwd(buf, 127);	
+}
+
+void	b_other(char **cut, t_env *env)
+{
+	if (execve(cut[0], cut, NULL) == -1)
+		printf("error\n");
+	printf("coucou\n");
 }
 
 t_env	*exec_cmd(char *line, t_env *env)
@@ -326,7 +335,7 @@ t_env	*exec_cmd(char *line, t_env *env)
 	else if (ft_strcmp("cd", cut[0]) == 0)
 		b_cd(cut[1], &env);
 	else
-		;
+		b_other(cut, env);
 	return (env);
 }
 
