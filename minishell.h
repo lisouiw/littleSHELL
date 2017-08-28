@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/23 19:10:09 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/28 05:43:53 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,8 @@ t_env	*add_env(char *environ, t_env *env, size_t one, size_t all);
 void	ecriture_info(t_env *lst);
 t_env	*give_env(t_env *env);
 char	**strsplit_two_c(char const *s, char c, char d);
+void	give_old(t_env **env, int i);
+void	b_cd(char *cd, t_env *env, char *last);
+void	change_env(t_env **env, char *buf);
 
 #endif

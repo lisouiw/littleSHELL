@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/24 18:55:54 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/28 05:44:44 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,18 +296,71 @@ void	b_unset(char **cut, t_env **env)
 	return;
 }
 
-void	b_cd(char *cd, t_env **env)
-{
-	char	buf[126]; //test if len sup
 
-	getcwd(buf, 127);	
+
+char	*give_home(t_env *env)
+{
+	while (ft_strcmp(env->name, "HOME=") != 0 && env->next != NULL)
+		env = env->next;
+	if (ft_strcmp(env->name, "HOME=") == 0)
+		return (env->ctn);
+	return (NULL);
+}
+
+void	give_path(t_env *env, char **cut)
+{
+	char	**path;
+	int		i;
+	char	*cmd;
+	pid_t	father;
+	int		w;
+	int		y;
+	int		a;
+
+	a = -1;
+	i = -1;
+	while (env->next != NULL && ft_strcmp("PATH=", env->name) != 0)
+		env = env->next;
+	if (ft_strcmp("PATH=", env->name) == 0 && (path = ft_strsplit(env->ctn, ':')))
+	//	father = fork();
+		;
+	while (path[++i])
+	{
+		cmd = ft_strjoin(path[i], "/");
+		cmd = ft_strjoin(cmd, cut[0]);
+		printf("%s\n",cmd);
+		father = fork();
+		waitpid(father, &w, 0);
+		if (father == 0)
+		{
+			execve(cmd, cut, NULL);
+			kill(father, y);
+			free(cmd);
+		}
+	}
+	if (y == 0)
+	{
+		waitpid(father, &w, 0);
+		if (father == 0)
+		{
+			ft_putstr("sh : command not found: ");
+			ft_putendl(cut[0]);
+		}
+	}
 }
 
 void	b_other(char **cut, t_env *env)
 {
-	if (execve(cut[0], cut, NULL) == -1)
-		printf("error\n");
-	printf("coucou\n");
+	pid_t	father;
+	int		w;
+
+	father = fork();
+	waitpid(father, &w, 0);
+	if (father == 0)
+	{
+		if (execve(cut[0], cut, NULL) == -1)
+			give_path(env, cut);
+	}
 }
 
 t_env	*exec_cmd(char *line, t_env *env)
@@ -333,9 +386,12 @@ t_env	*exec_cmd(char *line, t_env *env)
 		ecriture_info(env);
 	}
 	else if (ft_strcmp("cd", cut[0]) == 0)
-		b_cd(cut[1], &env);
+		b_cd(cut[1], env, cut[2]);
 	else
+	{
+		printf("OTHER\n");
 		b_other(cut, env);
+	}
 	return (env);
 }
 
@@ -377,8 +433,73 @@ t_env	*give_env(t_env *env)
 	return (env);
 }
 
+void	b_cd(char *cd, t_env *env, char *last)
+{
+	char	buf[126]; //test if len sup
+	char	*way;
+	int		o;
+
+	getcwd(buf, 127);
+	//printf("%s\n", buf);
+	way = ft_strjoin(buf , "/");
+	way = ft_strjoin(way, cd);
+/*	if (cd && (!opendir(way)))
+	{
+		if ((o = open(way, O_RDONLY)) == -1)
+			return (ft_putstr("cd : no such file or directory: [file]\n"));
+		else
+			return (ft_putstr("cd : not a directory: [file]\n"));
+	}*/
+	if (cd && ft_strcmp(cd, "-") == 0)
+	{
+		give_old(&env, 0);
+	}
+	else if ((!(cd) || ft_strcmp(cd, "~") == 0) && chdir(give_home(env)) == 0)
+		change_env(&env, getcwd(buf, 127));
+	else if (cd[0] == '~')
+	{
+		chdir((way = ft_strjoin("/Users/", &cd[1])));
+	//zsh: no such user or named directory: kdj
+	}
+	else if (cd[0] == '/')
+		chdir(cd);
+	else if (chdir(way) == -1)
+		printf("ERROR\n");
+}
+
+void	change_env(t_env **env, char *buf)
+{
+	while ((*env)->next != NULL && ft_strcmp((*env)->name, "PWD=") != 0)
+		*env = (*env)->next;
+	if (ft_strcmp((*env)->name, "PWD=") == 0)
+	{
+		free((*env)->ctn);
+		(*env)->ctn = ft_strdup(buf);
+	}
+}
+
+void	give_old(t_env **env, int i)
+{
+	t_env	*tmp;
+	char	buf[126];
+
+	tmp = *env;
+	while (ft_strcmp(tmp->name, "OLDPWD=") != 0 && tmp->next != NULL)
+		tmp = tmp->next;
+	if (ft_strcmp(tmp->name, "OLDPWD=") == 0 && i == 0)
+	{
+		getcwd(buf, 127);
+		chdir(tmp->ctn);
+		free(tmp->ctn);
+		(*env)->ctn = ft_strdup(buf);
+	}
+	else
+		ft_putendl("sh : cd: OLDPWD not set");
+}
+
 int		main(int argc, char **argv, char **env)
 {
+	char	*old;
 	char	*line;
 	t_env	*envs;
 
