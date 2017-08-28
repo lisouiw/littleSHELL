@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/28 05:44:44 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/28 08:11:37 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,15 +298,6 @@ void	b_unset(char **cut, t_env **env)
 
 
 
-char	*give_home(t_env *env)
-{
-	while (ft_strcmp(env->name, "HOME=") != 0 && env->next != NULL)
-		env = env->next;
-	if (ft_strcmp(env->name, "HOME=") == 0)
-		return (env->ctn);
-	return (NULL);
-}
-
 void	give_path(t_env *env, char **cut)
 {
 	char	**path;
@@ -322,14 +313,11 @@ void	give_path(t_env *env, char **cut)
 	while (env->next != NULL && ft_strcmp("PATH=", env->name) != 0)
 		env = env->next;
 	if (ft_strcmp("PATH=", env->name) == 0 && (path = ft_strsplit(env->ctn, ':')))
-	//	father = fork();
-		;
+		father = fork();
 	while (path[++i])
 	{
 		cmd = ft_strjoin(path[i], "/");
 		cmd = ft_strjoin(cmd, cut[0]);
-		printf("%s\n",cmd);
-		father = fork();
 		waitpid(father, &w, 0);
 		if (father == 0)
 		{
@@ -388,10 +376,8 @@ t_env	*exec_cmd(char *line, t_env *env)
 	else if (ft_strcmp("cd", cut[0]) == 0)
 		b_cd(cut[1], env, cut[2]);
 	else
-	{
-		printf("OTHER\n");
 		b_other(cut, env);
-	}
+	//cd_pwd();
 	return (env);
 }
 
@@ -433,65 +419,134 @@ t_env	*give_env(t_env *env)
 	return (env);
 }
 
+void	cd_home(t_env *env)
+{
+	char	buf[126];
+	t_env	*tmp;
+	t_env	*tm;
+
+	tmp = env;
+	tm = env;
+	while (ft_strcmp(tmp->name, "OLDPWD=") != 0 && tmp->next != NULL)
+		tmp = tmp->next;
+	if (ft_strcmp(tmp->name, "OLDPWD=") == 0)
+	{
+		free(tmp->ctn);
+		getcwd(buf, 126);
+		tmp->ctn = ft_strdup(buf);
+	}
+	while (ft_strcmp(env->name, "HOME=") != 0 && env->next != NULL)
+		env = env->next;
+	if (ft_strcmp(env->name, "HOME=") == 0)
+		chdir(env->ctn);
+	while (ft_strcmp(tm->name, "PWD=") != 0 && tm->next != NULL)
+		tm = tm->next;
+	if (ft_strcmp(tm->name, "PWD=") == 0)
+	{
+		getcwd(buf, 127);
+		free(tm->ctn);
+		tm->ctn = ft_strdup(buf);
+	}
+}
+
+void	cd_slash(t_env *tmp, char *cd)
+{
+	t_env	*env;
+	char	buf[126]; //test if len sup
+
+	env = tmp;
+	while (ft_strcmp(tmp->name, "OLDPWD=") != 0 && tmp->next != NULL)
+		tmp = tmp->next;
+	if (ft_strcmp(tmp->name, "OLDPWD=") == 0)
+	{
+		getcwd(buf, 127);
+		chdir(cd);
+		free(tmp->ctn);
+		tmp->ctn = ft_strdup(buf);
+		while (ft_strcmp(env->name, "PWD=") != 0 && env->next != NULL)
+			env = env->next;
+		if (ft_strcmp(env->name, "PWD=") == 0)
+		{
+			getcwd(buf, 127);
+			free(env->ctn);
+			env->ctn = ft_strdup(buf);
+		}
+	}
+}
+
+void	cd_name(t_env *tmp, char *cd, char *user)
+{
+	t_env	*env;
+	char	buf[126]; //test if len sup
+
+	user = ft_strjoin("/Users/", &cd[1]);
+	env = tmp;
+	while (ft_strcmp(tmp->name, "OLDPWD=") != 0 && tmp->next != NULL)
+		tmp = tmp->next;
+	if (ft_strcmp(tmp->name, "OLDPWD=") == 0)
+	{
+		getcwd(buf, 127);
+		chdir(user);
+		free(tmp->ctn);
+		tmp->ctn = ft_strdup(buf);
+		while (ft_strcmp(env->name, "PWD=") != 0 && env->next != NULL)
+			env = env->next;
+		if (ft_strcmp(env->name, "PWD=") == 0)
+		{
+			getcwd(buf, 127);
+			free(env->ctn);
+			env->ctn = ft_strdup(buf);
+		}
+	}
+}
+
+
+
 void	b_cd(char *cd, t_env *env, char *last)
 {
-	char	buf[126]; //test if len sup
+	char	buf[PATH_MAX]; //test if len sup
 	char	*way;
-	int		o;
+	int		i;
 
-	getcwd(buf, 127);
-	//printf("%s\n", buf);
+	getcwd(buf, PATH_MAX + 1);
 	way = ft_strjoin(buf , "/");
 	way = ft_strjoin(way, cd);
-/*	if (cd && (!opendir(way)))
-	{
-		if ((o = open(way, O_RDONLY)) == -1)
-			return (ft_putstr("cd : no such file or directory: [file]\n"));
-		else
-			return (ft_putstr("cd : not a directory: [file]\n"));
-	}*/
+	if (!(opendir(way)))
+		printf("MO\n");
 	if (cd && ft_strcmp(cd, "-") == 0)
-	{
-		give_old(&env, 0);
-	}
-	else if ((!(cd) || ft_strcmp(cd, "~") == 0) && chdir(give_home(env)) == 0)
-		change_env(&env, getcwd(buf, 127));
+		cd_prev(env);
+	else if ((!(cd) || ft_strcmp(cd, "~") == 0))
+		cd_home(env);
 	else if (cd[0] == '~')
-	{
-		chdir((way = ft_strjoin("/Users/", &cd[1])));
-	//zsh: no such user or named directory: kdj
-	}
+		cd_name(env, cd, NULL);
 	else if (cd[0] == '/')
-		chdir(cd);
+		cd_slash(env, cd);
 	else if (chdir(way) == -1)
 		printf("ERROR\n");
 }
 
-void	change_env(t_env **env, char *buf)
+void	cd_prev(t_env *tmp)
 {
-	while ((*env)->next != NULL && ft_strcmp((*env)->name, "PWD=") != 0)
-		*env = (*env)->next;
-	if (ft_strcmp((*env)->name, "PWD=") == 0)
-	{
-		free((*env)->ctn);
-		(*env)->ctn = ft_strdup(buf);
-	}
-}
+	t_env	*env;
+	char	buf[126]; //test if len sup
 
-void	give_old(t_env **env, int i)
-{
-	t_env	*tmp;
-	char	buf[126];
-
-	tmp = *env;
+	env = tmp;
 	while (ft_strcmp(tmp->name, "OLDPWD=") != 0 && tmp->next != NULL)
 		tmp = tmp->next;
-	if (ft_strcmp(tmp->name, "OLDPWD=") == 0 && i == 0)
+	if (ft_strcmp(tmp->name, "OLDPWD=") == 0)
 	{
 		getcwd(buf, 127);
 		chdir(tmp->ctn);
 		free(tmp->ctn);
-		(*env)->ctn = ft_strdup(buf);
+		tmp->ctn = ft_strdup(buf);
+		while (ft_strcmp(env->name, "PWD=") != 0 && env->next != NULL)
+			env = env->next;
+		if (ft_strcmp(env->name, "PWD=") == 0)
+		{
+			getcwd(buf, 127);
+			free(env->ctn);
+			env->ctn = ft_strdup(buf);
+		}
 	}
 	else
 		ft_putendl("sh : cd: OLDPWD not set");
