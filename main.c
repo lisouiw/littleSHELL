@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/28 08:11:37 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/29 18:44:29 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,9 +134,18 @@ void	b_cd(char **way, char *home, char *pwd)
 
 void	double_char(char **ar, int i)
 {
-
 	while (ar[++i])
 		ft_putendl(ar[i]);
+}
+
+void	double_char_c(char **ar, int i, char c)
+{
+	while (ar[++i])
+	{
+		ft_putstr(ar[i]);
+		ft_putchar(c);
+	}
+	write(1, "\n", 1);
 }
 
 void	my_strjoin(char **spc, char **line, int a)
@@ -172,51 +181,7 @@ size_t	all_d_len(char **echo, int a)
 	return (len);
 }
 
-
-int		b_echo(char **echo, int a, int o, char *join)
-{
-	int			i;
-	int			y;
-	char		*line;
-	char		*join2;
-	char		**cut;
-
-	y = 0;
-	join2 = join;
-	if(!(join = (char*)malloc(all_d_len(echo, a+1)*sizeof(char))))
-		return(-1);
-	while (echo[++a])
-	{
-		i = -1;
-		if (y != 0)
-			join[y++] = ' ';
-		while (echo[a][++i])
-		{
-			if (echo[a][i] != '"' && echo[a][i] != 39)
-				join[y++] = echo[a][i];
-			else if (echo[a][i] == 39 && o < 2)
-				o = (o == 0) ? 1 : 0;
-			else if (echo[a][i] == '"' && (o == 0 || o == 2))
-				o = (o == 0) ? 2 : 0;
-		}
-	}
-	join[y] = '\n';
-	join[y + 1] = '\0';
-	if (join2 != NULL)
-		join = ft_strjoin(join2, join);
-	if (o == 0)
-		ft_putstr(join);
-	while (o != 0)
-	{
-		o == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
-		get_next_line(0, &line);
-		cut = strsplit_two_c(line, '\t', ' ');
-		o = b_echo(cut, -1, o, join);
-	}
-	return (o);
-}
-
-void	b_export(char **cut, t_env *env)
+void	b_export(char **cut, t_env **env)
 {
 	int		i;
 	t_env	*tmp;
@@ -225,24 +190,28 @@ void	b_export(char **cut, t_env *env)
 	i = 0;
 	while (cut[++i])
 	{
-		kp = env;
+		kp = *env;
 		if ((ft_strchr(cut[i], '=')))
 		{
 			tmp = (t_env*)malloc(sizeof(t_env));
 			tmp = NULL;
 			tmp = add_env(cut[i], tmp, ft_strlen(ft_strchr(cut[i], '=')),
 				ft_strlen(cut[i]));
-			while (kp->next != NULL && ft_strcmp(kp->name, tmp->name) != 0)
+
+			while (kp && kp->next != NULL && ft_strcmp(kp->name, tmp->name) != 0)
 				kp = kp->next;
-			if (ft_strcmp(kp->name, tmp->name) == 0)
+			if (kp && ft_strcmp(kp->name, tmp->name) == 0)
 			{
 				free(kp->ctn);
 				kp->ctn = ft_strdup(tmp->ctn);
 				free_list(tmp);
 			}
-			else if (kp->next == NULL)
-				env = add_env(cut[i], env, ft_strlen(ft_strchr(cut[i], '=')),
+			//else if (kp->next == NULL)
+			else
+			{
+				*env = add_env(cut[i], *env, ft_strlen(ft_strchr(cut[i], '=')),
 					ft_strlen(cut[i]));
+			}
 		}
 	}
 }
@@ -314,26 +283,22 @@ void	give_path(t_env *env, char **cut)
 		env = env->next;
 	if (ft_strcmp("PATH=", env->name) == 0 && (path = ft_strsplit(env->ctn, ':')))
 		father = fork();
-	while (path[++i])
+	while (path[++i] && a == -1)
 	{
 		cmd = ft_strjoin(path[i], "/");
 		cmd = ft_strjoin(cmd, cut[0]);
 		waitpid(father, &w, 0);
-		if (father == 0)
+		if ((a = access(cmd, F_OK)) == 0 && father == 0)
 		{
 			execve(cmd, cut, NULL);
-			kill(father, y);
 			free(cmd);
 		}
 	}
-	if (y == 0)
+	if (a == -1)
 	{
-		waitpid(father, &w, 0);
-		if (father == 0)
-		{
-			ft_putstr("sh : command not found: ");
-			ft_putendl(cut[0]);
-		}
+//		kill(father, y);
+		ft_putstr("sh : command not found: ");
+		ft_putendl(cut[0]);
 	}
 }
 
@@ -342,13 +307,113 @@ void	b_other(char **cut, t_env *env)
 	pid_t	father;
 	int		w;
 
-	father = fork();
-	waitpid(father, &w, 0);
-	if (father == 0)
+	if (access(cut[0], F_OK) == 0)
 	{
-		if (execve(cut[0], cut, NULL) == -1)
-			give_path(env, cut);
+		father = fork();
+		if (waitpid(father, &w, 0) && father == 0)
+			execve(cut[0], cut, NULL);
 	}
+	else
+			give_path(env, cut);
+}
+/*
+int		b_echo_s(char **echo, int a, int o, char *rd)
+{
+	int			i;
+	int			y;
+	char		*line;
+	char		*join;
+	char		*join2;
+	char		**cut;
+
+	join = NULL;
+	y = 0;
+	join2 = join;
+	if(!(join = (char*)malloc(all_d_len(echo, a+1)*sizeof(char))))
+		return(-1);
+	while (echo[++a])
+	{
+		i = -1;
+		if (y != 0)
+			join[y++] = ' ';
+		while (echo[a][++i])
+		{
+			if (echo[a][i] != '"' && echo[a][i] != 39)
+				join[y++] = echo[a][i];
+			else if (echo[a][i] == 39 && o < 2)
+				o = (o == 0) ? 1 : 0;
+			else if (echo[a][i] == '"' && (o == 0 || o == 2))
+				o = (o == 0) ? 2 : 0;
+		}
+	}
+	join[y] = '\n';
+	join[y + 1] = '\0';
+	if (join2 != NULL)
+		join = ft_strjoin(join2, join);
+	if (o == 0)
+		ft_putstr(join);
+	while (o != 0)
+	{
+		o == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
+		get_next_line(0, &line);
+		cut = strsplit_two_c(line, '\t', ' ');
+		o = b_echo(cut, -1, o, join);
+	}
+	return (o);
+}*/
+
+void	b_echo(char **echo, char *join, int o, char *rd)
+{
+	int			i;
+	char		*line;
+	char		*join2;
+	int			a;
+
+	a = -1;
+	i = 0;
+	if(!(join2 = (char*)malloc((ft_strlen(rd) + 1)*sizeof(char))))
+		return;
+	while (rd[++a])
+	{
+		if (rd[a] == 39 && o < 2)
+			o = (o == 0) ? 1 : 0;
+		else if (rd[a] == '"' && (o == 0 || o == 2))
+			o = (o == 0) ? 2 : 0;
+		else if (rd[a] != '"' && rd[a] != 39 && rd[a] != ' ' && rd[a] != '\t')
+			join2[i++] = rd[a];
+		else if ((rd[a] == ' ' || rd[a] == '\t') && o != 0)
+			join2[i++] = rd[a];
+		else if ((rd[a] == '"' && o == 1) || (rd[a] == 39 && o == 2))
+			join2[i++] = rd[a];
+		else if ((rd[a] == ' ' || rd[a] == '\t') && join2[i-1] != ' ' && o == 0)
+			join2[i++] = ' ';
+	}
+	join2[i] = '\n';
+	join2[i + 1] = '\0';
+	if (join != NULL)
+		join2 = ft_strjoin(join, join2);
+	if (o == 0)
+		ft_putstr(join2);
+	else
+	{
+		o == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
+		get_next_line(0, &line);
+		b_echo(echo, join2, o, line);
+	}
+}
+
+void	*no_b_spc(char *s)
+{
+	int		i;
+	char	*b;
+
+	i = 0;
+	b = (char*)s;
+	while ((b[i] == ' ' || b[i] == '\t') && b[i] != '\0')
+		++i;
+	if (b[i] != '\0')
+		return (&b[i]);
+	return (NULL);
 }
 
 t_env	*exec_cmd(char *line, t_env *env)
@@ -357,17 +422,20 @@ t_env	*exec_cmd(char *line, t_env *env)
 
 	if (!(cut = strsplit_two_c(line, '\t', ' ')) || !cut[0])
 		return (env);
+
 	if (ft_strcmp("echo", cut[0]) == 0)
 	{
-		if (cut[1])
-			b_echo(cut, 0, 0, NULL);
-		else
+		if (!(cut[1]))
 			write(1, "\n", 1);
+		else if (ft_strchr(line , '"') == NULL && ft_strchr(line , 39) == NULL)
+			double_char_c(cut, 0, ' ');
+		else
+			b_echo(cut, NULL, 0, no_b_spc(&line[4]));
 	}
 	else if (ft_strcmp("env", cut[0]) == 0)
 		ecriture_info(env);
 	else if (ft_strcmp("export", cut[0]) == 0 && cut[1])
-		b_export(cut, env);
+		b_export(cut, &env);
 	else if (ft_strcmp("unset", cut[0]) == 0)
 	{
 		b_unset(cut, &env);
@@ -377,7 +445,6 @@ t_env	*exec_cmd(char *line, t_env *env)
 		b_cd(cut[1], env, cut[2]);
 	else
 		b_other(cut, env);
-	//cd_pwd();
 	return (env);
 }
 
@@ -566,6 +633,8 @@ int		main(int argc, char **argv, char **env)
 			exit(0);
 		else
 			envs = exec_cmd(line, envs);
+		line = NULL;
+		free(line);
 	}
 	return (0);
 }

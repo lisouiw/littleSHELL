@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/07 18:16:01 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/24 17:51:28 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/29 18:36:22 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 void	ecriture_info(t_env *lst)
 {
+	if (!(lst))
+		return;
 	while (lst->next != NULL)
 	{
 		ft_putstr(lst->name);
