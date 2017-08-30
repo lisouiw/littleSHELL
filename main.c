@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/29 18:44:29 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/30 18:16:03 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,16 +197,16 @@ void	b_export(char **cut, t_env **env)
 			tmp = NULL;
 			tmp = add_env(cut[i], tmp, ft_strlen(ft_strchr(cut[i], '=')),
 				ft_strlen(cut[i]));
-
-			while (kp && kp->next != NULL && ft_strcmp(kp->name, tmp->name) != 0)
+			while (kp->name != NULL && kp->next != NULL && ft_strcmp(kp->name, tmp->name) != 0)
 				kp = kp->next;
-			if (kp && ft_strcmp(kp->name, tmp->name) == 0)
+			if (kp->name == NULL || ft_strcmp(kp->name, tmp->name) == 0)
 			{
+				free(kp->name);
+				kp->name = ft_strdup(tmp->name);
 				free(kp->ctn);
 				kp->ctn = ft_strdup(tmp->ctn);
 				free_list(tmp);
 			}
-			//else if (kp->next == NULL)
 			else
 			{
 				*env = add_env(cut[i], *env, ft_strlen(ft_strchr(cut[i], '=')),
@@ -215,56 +215,6 @@ void	b_export(char **cut, t_env **env)
 		}
 	}
 }
-
-void	b_unset(char **cut, t_env **env)
-{
-	int		i;
-	t_env	*kp;
-	t_env	*sup;
-
-	i = 0;
-	while (cut[++i])
-	{
-		kp = *env;
-		if (ft_strcmp(kp->name, cut[i]) == 61)
-		{
-			sup = kp;
-			*env = (*env)->next;
-			sup->name = NULL;
-			free(sup->name);
-			free(sup->ctn);
-			free(sup);
-			kp = *env;
-		}
-		else
-		{
-			while (kp->next != NULL && ft_strcmp(kp->next->name, cut[i]) != 61)
-				kp = kp->next;
-			if (ft_strcmp(kp->next->name, cut[i]) == 61)
-			{
-				sup = kp->next;
-				if (kp->next->next != NULL)
-				{
-					kp->next = kp->next->next;
-					sup->name = NULL;
-					sup->ctn = NULL;
-					free(sup->name);
-					free(sup->ctn);
-				}
-				else
-				{
-					sup->name = NULL;
-					sup->ctn = NULL;
-					free(sup->name);
-					free(sup->ctn);
-					kp->next = NULL;
-				}
-			}
-		}
-	}
-	return;
-}
-
 
 
 void	give_path(t_env *env, char **cut)
@@ -316,51 +266,6 @@ void	b_other(char **cut, t_env *env)
 	else
 			give_path(env, cut);
 }
-/*
-int		b_echo_s(char **echo, int a, int o, char *rd)
-{
-	int			i;
-	int			y;
-	char		*line;
-	char		*join;
-	char		*join2;
-	char		**cut;
-
-	join = NULL;
-	y = 0;
-	join2 = join;
-	if(!(join = (char*)malloc(all_d_len(echo, a+1)*sizeof(char))))
-		return(-1);
-	while (echo[++a])
-	{
-		i = -1;
-		if (y != 0)
-			join[y++] = ' ';
-		while (echo[a][++i])
-		{
-			if (echo[a][i] != '"' && echo[a][i] != 39)
-				join[y++] = echo[a][i];
-			else if (echo[a][i] == 39 && o < 2)
-				o = (o == 0) ? 1 : 0;
-			else if (echo[a][i] == '"' && (o == 0 || o == 2))
-				o = (o == 0) ? 2 : 0;
-		}
-	}
-	join[y] = '\n';
-	join[y + 1] = '\0';
-	if (join2 != NULL)
-		join = ft_strjoin(join2, join);
-	if (o == 0)
-		ft_putstr(join);
-	while (o != 0)
-	{
-		o == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
-		get_next_line(0, &line);
-		cut = strsplit_two_c(line, '\t', ' ');
-		o = b_echo(cut, -1, o, join);
-	}
-	return (o);
-}*/
 
 void	b_echo(char **echo, char *join, int o, char *rd)
 {
@@ -416,13 +321,75 @@ void	*no_b_spc(char *s)
 	return (NULL);
 }
 
+
+void	b_unset(char **cut, t_env **env)
+{
+	int		i;
+	t_env	*kp;
+	t_env	*sup;
+
+	i = 0;
+
+	while (cut[++i])
+	{
+		kp = *env;
+		if (ft_strcmp(kp->name, cut[i]) == 61)
+		{
+			if ((*env)->next == NULL)
+			{
+				printf("PUTn\n");
+				(*env)->name = NULL;
+				(*env)->ctn = NULL;
+			}
+			else
+			{
+				sup = kp;
+				*env = (*env)->next;
+				sup->name = NULL;
+				free(sup->name);
+				free(sup->ctn);
+				free(sup);
+				kp = *env;
+				free(sup->ctn);
+			}
+		}
+		else
+		{
+			while (kp->next != NULL && ft_strcmp(kp->next->name, cut[i]) != 61)
+				kp = kp->next;
+			if (ft_strcmp(kp->next->name, cut[i]) == 61)
+			{
+				sup = kp->next;
+				if (kp->next->next != NULL)
+				{
+					kp->next = kp->next->next;
+					sup->name = NULL;
+					sup->ctn = NULL;
+					free(sup->name);
+					free(sup->ctn);
+				}
+				else
+				{
+					sup->name = NULL;
+					sup->ctn = NULL;
+					free(sup->name);
+					free(sup->ctn);
+					kp->next = NULL;
+				}
+			}
+		}
+	}
+	return;
+}
+
+
+
 t_env	*exec_cmd(char *line, t_env *env)
 {
 	char	**cut;
 
 	if (!(cut = strsplit_two_c(line, '\t', ' ')) || !cut[0])
 		return (env);
-
 	if (ft_strcmp("echo", cut[0]) == 0)
 	{
 		if (!(cut[1]))
@@ -433,10 +400,10 @@ t_env	*exec_cmd(char *line, t_env *env)
 			b_echo(cut, NULL, 0, no_b_spc(&line[4]));
 	}
 	else if (ft_strcmp("env", cut[0]) == 0)
-		ecriture_info(env);
+		env->name == NULL ? 0 : ecriture_info(env);
 	else if (ft_strcmp("export", cut[0]) == 0 && cut[1])
 		b_export(cut, &env);
-	else if (ft_strcmp("unset", cut[0]) == 0)
+	else if (env && ft_strcmp("unset", cut[0]) == 0)
 	{
 		b_unset(cut, &env);
 		ecriture_info(env);
@@ -469,14 +436,23 @@ t_env	*add_env(char *environ, t_env *env, size_t one, size_t all)
 	return (env);
 }
 
+t_env	*create_env(t_env *env)
+{
+	env = (t_env*)malloc(sizeof(t_env));
+	env->name = ft_strnew(0);
+	env->name = NULL;
+	env->ctn = ft_strnew(0);
+	env->ctn = NULL;
+	env->next = NULL;
+	return (env);
+}
+
 t_env	*give_env(t_env *env)
 {
 	int				i;
 	extern char		**environ;
 
-	env = (t_env*)malloc(sizeof(t_env));
-	env->next = NULL;
-	env = NULL;
+	env = create_env(NULL);
 	i = -1;
 	while (environ[++i])
 	{

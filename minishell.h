@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/08/28 07:14:23 by ltran            ###   ########.fr       */
+/*   Updated: 2017/08/30 18:10:52 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,5 +42,6 @@ t_env	*give_env(t_env *env);
 char	**strsplit_two_c(char const *s, char c, char d);
 void	b_cd(char *cd, t_env *env, char *last);
 void	cd_prev(t_env *tmp);
+t_env	*create_env(t_env *env);
 
 #endif
