@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/01 15:09:33 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/02 15:54:08 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,6 @@ void	free_list(t_env *env);
 t_env	*add_env(char *environ, t_env *env, size_t one, size_t all);
 void	ecriture_info(t_env *lst);
 char	**strsplit_two_c(char const *s, char c, char d);
-void	b_cd(char *cd, t_env *env, char *last);
-void	cd_prev(t_env *tmp);
 t_env	*create_env(t_env *env);
 
 
@@ -49,5 +47,11 @@ t_env	*add_env(char *environ, t_env *env, size_t one, size_t all);
 t_env	*exec_cmd(char *line, t_env *env);
 void	*no_b_spc(char *s);
 void	b_echo(char *join, int o, char *rd);
+void	b_export(char *cut, t_env **env);
+void	b_unset(char **cut, t_env **env);
+void	b_cd(char *cd, t_env **env);
+
+
+void	cd_prev(t_env **env);
 
 #endif

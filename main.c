@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/01 16:43:13 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/02 16:12:07 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,67 +185,6 @@ void	b_other(char **cut, t_env *env)
 			give_path(env, cut);
 }
 
-void	b_unset(char **cut, t_env **env)
-{
-	int		i;
-	t_env	*kp;
-	t_env	*sup;
-
-	i = 0;
-
-	while (cut[++i])
-	{
-		kp = *env;
-		if (ft_strcmp(kp->name, cut[i]) == 61)
-		{
-			if ((*env)->next == NULL)
-			{
-				printf("PUTn\n");
-				(*env)->name = NULL;
-				(*env)->ctn = NULL;
-			}
-			else
-			{
-				sup = kp;
-				*env = (*env)->next;
-				sup->name = NULL;
-				free(sup->name);
-				free(sup->ctn);
-				free(sup);
-				kp = *env;
-				free(sup->ctn);
-			}
-		}
-		else
-		{
-			while (kp->next != NULL && ft_strcmp(kp->next->name, cut[i]) != 61)
-				kp = kp->next;
-			if (ft_strcmp(kp->next->name, cut[i]) == 61)
-			{
-				sup = kp->next;
-				if (kp->next->next != NULL)
-				{
-					kp->next = kp->next->next;
-					sup->name = NULL;
-					sup->ctn = NULL;
-					free(sup->name);
-					free(sup->ctn);
-				}
-				else
-				{
-					sup->name = NULL;
-					sup->ctn = NULL;
-					free(sup->name);
-					free(sup->ctn);
-					kp->next = NULL;
-				}
-			}
-		}
-	}
-	return;
-}
-
-
 
 
 void	cd_home(t_env *env)
@@ -331,51 +270,22 @@ void	cd_name(t_env *tmp, char *cd, char *user)
 
 
 
-void	b_cd(char *cd, t_env *env, char *last)
-{
-	char	buf[PATH_MAX]; //test if len sup
-	char	*way;
-	int		i;
 
-	getcwd(buf, PATH_MAX + 1);
-	way = ft_strjoin(buf , "/");
-	way = ft_strjoin(way, cd);
-	if (!(opendir(way)))
-		printf("MO\n");
-	if (cd && ft_strcmp(cd, "-") == 0)
-		cd_prev(env);
-	else if ((!(cd) || ft_strcmp(cd, "~") == 0))
-		cd_home(env);
-	else if (cd[0] == '~')
-		cd_name(env, cd, NULL);
-	else if (cd[0] == '/')
-		cd_slash(env, cd);
-	else if (chdir(way) == -1)
-		printf("ERROR\n");
-}
 
-void	cd_prev(t_env *tmp)
+void	cd_prev(t_env **env)
 {
-	t_env	*env;
+	t_env	*tmp;
 	char	buf[126]; //test if len sup
 
-	env = tmp;
-	while (ft_strcmp(tmp->name, "OLDPWD=") != 0 && tmp->next != NULL)
+	tmp = *env;
+	while (tmp->next != NULL && ft_strcmp(tmp->name, "OLDPWD=") != 0)
 		tmp = tmp->next;
 	if (ft_strcmp(tmp->name, "OLDPWD=") == 0)
 	{
 		getcwd(buf, 127);
 		chdir(tmp->ctn);
-		free(tmp->ctn);
-		tmp->ctn = ft_strdup(buf);
-		while (ft_strcmp(env->name, "PWD=") != 0 && env->next != NULL)
-			env = env->next;
-		if (ft_strcmp(env->name, "PWD=") == 0)
-		{
-			getcwd(buf, 127);
-			free(env->ctn);
-			env->ctn = ft_strdup(buf);
-		}
+		b_export(ft_strjoin("PWD=", tmp->ctn), &(*env));
+		b_export(ft_strjoin("OLDPWD=", buf), &(*env));
 	}
 	else
 		ft_putendl("sh : cd: OLDPWD not set");
@@ -391,44 +301,37 @@ void	double_char_c(char **ar, int i, char c)
 	write(1, "\n", 1);
 }
 
-void	b_export(char **cut, t_env **env)
+void	b_cd(char *cd, t_env **env)
 {
+	char	buf[PATH_MAX]; //test if len sup
+	char	*way;
 	int		i;
-	t_env	*tmp;
-	t_env	*kp;
 
-	i = 0;
-	while (cut[++i])
-	{
-		kp = *env;
-		if ((ft_strchr(cut[i], '=')))
-		{
-			tmp = add_env(cut[i], NULL, ft_strlen(ft_strchr(cut[i], '=')),
-					ft_strlen(cut[i]));
-			while (kp && kp->next != NULL && ft_strcmp(kp->name, tmp->name) != 0)
-				kp = kp->next;
-			if (kp && ft_strcmp(kp->name, tmp->name) == 0)
-			{
-				free(kp->name);
-				kp->name = ft_strdup(tmp->name);
-				free(kp->ctn);
-				kp->ctn = ft_strdup(tmp->ctn);
-				free_list(tmp);
-			}
-			else
-			{
-				*env = add_env(cut[i], *env, ft_strlen(ft_strchr(cut[i], '=')),
-						ft_strlen(cut[i]));
-			}
-		}
-	}
+	//need to create pwd  and OldPWd
+
+	getcwd(buf, PATH_MAX + 1);
+	way = ft_strjoin(buf , "/");
+	way = ft_strjoin(way, cd);
+	if (cd && ft_strcmp(cd, "-") == 0)
+		cd_prev(env);
+
+	printf("%s\n", way);
+/*	else if ((!(cd) || ft_strcmp(cd, "~") == 0))
+		cd_home(env);
+	else if (cd[0] == '~')
+		cd_name(env, cd, NULL);
+	else if (cd[0] == '/')
+		cd_slash(env, cd);
+	else if (chdir(way) == -1)
+		printf("ERROR\n");*/
 }
-
 
 t_env	*exec_cmd(char *line, t_env *env)
 {
 	char	**cut;
+	int		i;
 
+	i = 0;
 	if (!(cut = strsplit_two_c(line, '\t', ' ')) || !cut[0])
 		return (env);
 	if (ft_strcmp("echo", cut[0]) == 0)
@@ -443,15 +346,15 @@ t_env	*exec_cmd(char *line, t_env *env)
 	else if (ft_strcmp("env", cut[0]) == 0)
 		ecriture_info(env);
 	else if (ft_strcmp("export", cut[0]) == 0 && cut[1])
-		b_export(cut, &env);
-/*	else if (env && ft_strcmp("unset", cut[0]) == 0)
 	{
-		b_unset(cut, &env);
-		ecriture_info(env);
+		while (cut[++i])
+			b_export(cut[i], &env);
 	}
+	else if (env && ft_strcmp("unset", cut[0]) == 0)
+		b_unset(cut, &env);
 	else if (ft_strcmp("cd", cut[0]) == 0)
-		b_cd(cut[1], env, cut[2]);
-	else
+		b_cd(cut[1], &env);
+/*	else
 		b_other(cut, env);*/
 	return (env);
 }
@@ -462,15 +365,18 @@ int		main(int argc, char **argv, char **env)
 	t_env	*envs;
 
 	envs = give_env(NULL);
-//	if (!(envs))
-//		printf("Vide\n");
 	while (42)
 	{
 		ft_putstr("(. Y .)> ");
 		if (get_next_line(0, &line) && ft_strcmp(line, "exit") == 0)
 			exit(0);
-		else
+		else if (line)
 			envs = exec_cmd(line, envs);
+		else
+		{
+			ft_putchar(0);
+			exit(0);
+		}
 	}
 	return (0);
 }
