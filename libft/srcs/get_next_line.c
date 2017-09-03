@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/18 01:11:43 by ltran             #+#    #+#             */
-/*   Updated: 2017/02/16 03:57:18 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/03 21:10:06 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int		ft_read(int fd, char *buf, int r)
 
 int		get_next_line(int fd, char **line)
 {
-	static char			buf[BUFF_SIZE + 1];
+	static char			buf[BUFF_SIZE - 1];
 
 	if (ft_strlen(buf) > 0)
 	{

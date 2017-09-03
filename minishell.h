@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/02 15:54:08 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/03 21:14:34 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,9 @@ void	b_unset(char **cut, t_env **env);
 void	b_cd(char *cd, t_env **env);
 
 
-void	cd_prev(t_env **env);
+void	cd_prev(t_env **env, char *buf);
+void	cd_home(t_env **env, char *buf);
+void	cd_name(t_env **env, char *cd, char *user, char *buf);
+void	cd_slash(t_env **env, char *cd, char *buf);
 
 #endif
