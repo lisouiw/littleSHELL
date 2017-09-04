@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/03 18:01:20 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/03 20:25:43 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/04 07:13:21 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 void	cd_prev(t_env **env, char *buf)
 {
 	t_env	*tmp;
+	char	*b;
 
 	tmp = *env;
 	while (tmp && tmp->next != NULL && ft_strcmp(tmp->name, "OLDPWD=") != 0)
@@ -23,9 +24,11 @@ void	cd_prev(t_env **env, char *buf)
 	{
 		if (chdir(tmp->ctn) == 0)
 		{
-			b_export(ft_strjoin("OLDPWD=", buf), &(*env));
+			b_export((b = ft_strjoin("OLDPWD=", buf)), &(*env));
+			free(b);
 			getcwd(buf, PATH_MAX);
-			b_export(ft_strjoin("PWD=", buf), &(*env));
+			b_export((b = ft_strjoin("PWD=", buf)), &(*env));
+			free(b);
 			ft_putendl(buf);
 		}
 		else
@@ -40,6 +43,7 @@ void	cd_prev(t_env **env, char *buf)
 
 void	cd_home(t_env **env, char *buf)
 {
+	char	*b;
 	t_env	*tmp;
 
 	tmp = *env;
@@ -65,15 +69,20 @@ void	cd_home(t_env **env, char *buf)
 
 void	cd_name(t_env **env, char *cd, char *user, char *buf)
 {
+	char	*b;
+
 	user = ft_strjoin("/Users/", &cd[1]);
 	if (chdir(user) == 0)
 	{
-		b_export(ft_strjoin("OLDPWD=", buf), &(*env));
+		b_export((b = ft_strjoin("OLDPWD=", buf)), &(*env));
+		free(b);
 		getcwd(buf, PATH_MAX);
-		b_export(ft_strjoin("PWD=", buf), &(*env));
+		b_export((b = ft_strjoin("PWD=", buf)), &(*env));
+		free(b);
 	}
 	else
 		printf("EROOOOOOOOOOR\n");
+	free(user);
 }
 
 void	cd_slash(t_env **env, char *cd, char *buf)

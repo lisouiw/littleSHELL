@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:13:45 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/02 16:04:10 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/04 07:04:25 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ void	b_export(char *cut, t_env **env)
 
 	i = 0;
 	kp = *env;
-	printf("----->%s\n", cut);
 	if ((ft_strchr(cut, '=')))
 	{
 		tmp = add_env(cut, NULL, ft_strlen(ft_strchr(cut, '=')),
@@ -40,6 +39,9 @@ void	b_export(char *cut, t_env **env)
 					ft_strlen(cut));
 		}
 	}
+	free(tmp->name);
+	free(tmp->ctn);
+	free(tmp);
 }
 
 void	b_unset(char **cut, t_env **env)

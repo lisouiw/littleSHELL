@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/03 21:14:34 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/04 06:25:10 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ t_env	*create_env(t_env *env);
 
 t_env	*give_env(t_env *env);
 t_env	*add_env(char *environ, t_env *env, size_t one, size_t all);
-t_env	*exec_cmd(char *line, t_env *env);
+t_env	*exec_cmd(char *line, t_env *env, char **cut, int i);
 void	*no_b_spc(char *s);
 void	b_echo(char *join, int o, char *rd);
 void	b_export(char *cut, t_env **env);

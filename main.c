@@ -6,14 +6,22 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/03 22:15:57 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/04 07:08:14 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <unistd.h>
 #include "minishell.h"
 
+char	*t_strjoin(char *f, char *s, char *t)
+{
+	char	*way;
+	char	*tmp;
+
+	tmp = ft_strjoin(f, s);
+	way = ft_strjoin(tmp, t);
+	free(tmp);
+	return (way);
+}
 
 int		len_double(char **ar, int i)
 {
@@ -47,25 +55,6 @@ void	double_char(char **ar, int i)
 		ft_putendl(ar[i]);
 }
 
-
-
-void	my_strjoin(char **spc, char **line, int a)
-{
-	char	*tmp;
-
-	if (line[a] && !(line [a + 1]))
-		*spc = line[a];
-	while (line[a] && line [a + 1])
-	{
-		if (*spc != NULL)
-			tmp = ft_strjoin(*spc, " ");
-		else
-			tmp = ft_strjoin(line[a], " ");
-		*spc = ft_strjoin(tmp, line[a + 1]);
-		++a;
-	}
-}
-
 size_t	all_d_len(char **echo, int a)
 {
 	int			o;
@@ -82,6 +71,17 @@ size_t	all_d_len(char **echo, int a)
 	return (len);
 }
 
+void	free_tab(char **fr)
+{
+	int		i;
+
+	i = -1;
+	while (fr[++i])
+	{
+		free(fr[i]);
+		fr[i] = NULL;
+	}
+}
 
 void	double_char_c(char **ar, int i, char c)
 {
@@ -100,8 +100,7 @@ void	b_cd(char *cd, t_env **env)
 	int		i;
 
 	getcwd(buf, PATH_MAX);
-	way = ft_strjoin(buf , "/");
-	way = ft_strjoin(way, cd);
+	way = t_strjoin(buf , "/", cd);
 	if (cd && ft_strcmp(cd, "-") == 0)
 		cd_prev(env, buf);
 	else if ((!(cd) || ft_strcmp(cd, "~") == 0))
@@ -110,42 +109,35 @@ void	b_cd(char *cd, t_env **env)
 		cd_name(env, cd, NULL, buf);
 	else
 		cd_slash(env, cd[0] == '/' ? cd : way, buf);
+	free(way);
 }
 
-void	give_path(t_env *env, char **cut)
+int		give_path(t_env *env, char **cut, int i, int a)
 {
 	char	**path;
-	int		i;
 	char	*cmd;
 	pid_t	father;
 	int		w;
-	int		y;
-	int		a;
 
-	a = -1;
-	i = -1;
 	while (env && env->next != NULL && ft_strcmp("PATH=", env->name) != 0)
 		env = env->next;
 	if (env && ft_strcmp("PATH=", env->name) == 0 && (path = ft_strsplit(env->ctn, ':')))
 	{
-		father = fork();
-		while (path[++i])
+		while (path[++i] && a == -1)
 		{
-			cmd = ft_strjoin(path[i], "/");
-			cmd = ft_strjoin(cmd, cut[0]);
-			waitpid(father, &w, 0);
-			if ((a = access(cmd, F_OK)) == 0 && father == 0)
+			cmd = t_strjoin(path[i], "/", cut[0]);
+			if ((a = access(cmd, F_OK)) == 0)
 			{
-				execve(cmd, cut, NULL);
-				free(cmd);
-				break;
+				father = fork();
+				waitpid(father, &w, 0);
+				if (father == 0)
+					execve(cmd, cut, NULL);
 			}
+			free(cmd);
 		}
-		if (a == 0)
-			return;
 	}
-	ft_putstr("sh : command not found: ");
-	ft_putendl(cut[0]);
+	free_tab(path);
+	return (a);
 }
 
 void	b_other(char **cut, t_env *env)
@@ -160,15 +152,17 @@ void	b_other(char **cut, t_env *env)
 			execve(cut[0], cut, NULL);
 	}
 	else
-			give_path(env, cut);
+	{
+		if (give_path(env, cut, -1, -1) == -1)
+		{
+			ft_putstr("sh : command not found: ");
+			ft_putendl(cut[0]);
+		}
+	}
 }
 
-t_env	*exec_cmd(char *line, t_env *env)
+t_env	*exec_cmd(char *line, t_env *env, char **cut, int i)
 {
-	char	**cut;
-	int		i;
-
-	i = 0;
 	if (!(cut = strsplit_two_c(line, '\t', ' ')) || !cut[0])
 		return (env);
 	if (ft_strcmp("echo", cut[0]) == 0)
@@ -193,6 +187,7 @@ t_env	*exec_cmd(char *line, t_env *env)
 		b_cd(cut[1], &env);
 	else
 		b_other(cut, env);
+	free_tab(cut);
 	return (env);
 }
 
@@ -200,25 +195,31 @@ int		main(int argc, char **argv, char **env)
 {
 	char	*line;
 	t_env	*envs;
+	int		i;
 
+	i = -1;
 	envs = give_env(NULL);
 	while (42)
 	{
 		ft_putstr("(. Y .)> ");
 		if (get_next_line(0, &line) && ft_strcmp(line, "exit") == 0)
-			exit(0);
-		else if (line && ft_strcmp(line, "") != 0)
 		{
-			printf("|%s|\n", line);
-			envs = exec_cmd(line, envs);
+			free(line);
+			exit(0);
+		}
+		else if (line)
+		{
+			if (ft_strlen(line) > 0)
+				envs = exec_cmd(line, envs, NULL, 0);
+			line = NULL;
+			free(line);
 		}
 		else if (!(line))
 		{
 			ft_putchar(0);
 			exit(0);
 		}
-		if (line)
-			free(line);
 	}
+	free_list(envs);
 	return (0);
 }
