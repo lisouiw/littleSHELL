@@ -57,4 +57,9 @@ void	cd_home(t_env **env, char *buf);
 void	cd_name(t_env **env, char *cd, char *user, char *buf);
 void	cd_slash(t_env **env, char *cd, char *buf, char *real);
 
+char	*t_strjoin(char *f, char *s, char *t);
+
+void	double_char_c(char **ar, int i, char c);
+void	free_tab(char **array);
+
 #endif

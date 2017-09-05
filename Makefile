@@ -6,7 +6,7 @@
 #    By: ltran <marvin@42.fr>                       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/06/23 14:18:46 by ltran             #+#    #+#              #
-#    Updated: 2017/06/26 12:03:09 by ltran            ###   ########.fr        #
+#    Updated: 2017/06/23 15:39:18 by ltran            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,8 +18,7 @@ SRCDIR = srcs
 
 FLAGS = -Wall -Werror -Wextra
 
-SRCS = begin_l.c ecriture.c ecriture_l.c liste.c main.c parsing.c recursive.c \
-		tools.c
+SRCS = cd.c echo.c env.c main.c strsplit_two_c.c tools.c
 
 SRC_N = $(addprefix $(SRCDIR)/, $(SRCS))
 
