@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/26 17:29:10 by ltran             #+#    #+#             */
-/*   Updated: 2017/06/23 16:06:37 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/05 13:46:49 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,6 @@ char	*ft_strsub(char const *s, unsigned int start, size_t len)
 		i++;
 		start++;
 	}
-	troncon[i] = '\0';
+	troncon[len] = '\0';
 	return (troncon);
 }

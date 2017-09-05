@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/18 01:11:43 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/05 15:56:07 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/05 13:56:33 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,10 @@ int		get_next_line(int fd, char **line)
 {
 	static char			buf[BUFF_SIZE - 1];
 
-	if (ft_strlen(buf) > 0)
+	if ((ft_strlen(buf) > 0 && ft_strcpy(buf, ft_sep(buf, 1, 0)))
 	{
-		ft_strcpy(buf, ft_sep(buf, 1, 0));
+		free(*line);
+		*line = ft_strnew(0);
 		if (ft_strlen(buf) == 0 && ft_read(fd, buf, 0) == 0)
 			return (0);
 		if (ft_strchr(buf, '\n') == buf)
@@ -71,11 +72,8 @@ int		get_next_line(int fd, char **line)
 	}
 	if (!(ft_strlen(buf) > 0) && ft_read(fd, buf, 0) < 0)
 		return (-1);
-	if (ft_strchr(buf, '\n') != NULL)
-	{
-		*line = ft_sep(buf, 0, 0);
+	if (ft_strchr(buf, '\n') != NULL && (*line = ft_sep(buf, 0, 0)))
 		return (1);
-	}
 	while (ft_strlen(buf) > 0)
 	{
 		*line = ft_no(fd, buf, 0, ft_strlen(buf));

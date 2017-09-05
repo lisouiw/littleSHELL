@@ -6,49 +6,64 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:29:27 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/01 15:51:23 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/05 18:14:19 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	b_echo(char *join, int o, char *rd)
+char	*give_echo(char *join2, int *o, char *rd, int i)
 {
-	int			i;
-	char		*line;
-	char		*join2;
-	int			a;
+	int		a;
 
 	a = -1;
-	i = 0;
-	if(!(join2 = (char*)malloc((ft_strlen(rd) + 1)*sizeof(char))))
-		return;
+	if (!(join2 = (char*)malloc((ft_strlen(rd) + 1) * sizeof(char))))
+		return (NULL);
 	while (rd[++a])
 	{
-		if (rd[a] == 39 && o < 2)
-			o = (o == 0) ? 1 : 0;
-		else if (rd[a] == '"' && (o == 0 || o == 2))
-			o = (o == 0) ? 2 : 0;
+		if (rd[a] == 39 && *o < 2)
+			*o = (*o == 0) ? 1 : 0;
+		else if (rd[a] == '"' && (*o == 0 || *o == 2))
+			*o = (*o == 0) ? 2 : 0;
 		else if (rd[a] != '"' && rd[a] != 39 && rd[a] != ' ' && rd[a] != '\t')
 			join2[i++] = rd[a];
-		else if ((rd[a] == ' ' || rd[a] == '\t') && o != 0)
+		else if ((rd[a] == ' ' || rd[a] == '\t') && *o != 0)
 			join2[i++] = rd[a];
-		else if ((rd[a] == '"' && o == 1) || (rd[a] == 39 && o == 2))
+		else if ((rd[a] == '"' && *o == 1) || (rd[a] == 39 && *o == 2))
 			join2[i++] = rd[a];
-		else if ((rd[a] == ' ' || rd[a] == '\t') && join2[i - 1] != ' ' && o == 0)
+		else if ((rd[a] == ' ' || rd[a] == '\t') && join2[i - 1] != ' '
+				&& *o == 0)
 			join2[i++] = ' ';
 	}
 	join2[i] = '\n';
 	join2[i + 1] = '\0';
-	if (join != NULL)
-		join2 = ft_strjoin(join, join2);
+	return (join2);
+}
+
+void	b_echo(char *join, int o, char *rd)
+{
+	char		*line;
+	char		*tmp;
+	char		*join2;
+
+	join2 = NULL;
+	if ((join2 = give_echo(join2, &o, rd, 0)) == NULL)
+		return ;
+	tmp = ft_strjoin(join, join2);
 	if (o == 0)
-		ft_putstr(join2);
+	{
+		tmp == NULL ? ft_putstr(join2) : ft_putstr(tmp);
+		ft_strdel(&join2);
+		ft_strdel(&tmp);
+	}
 	else
 	{
 		o == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
 		get_next_line(0, &line);
 		b_echo(join2, o, line);
+		ft_strdel(&join2);
+		ft_strdel(&tmp);
+		ft_strdel(&line);
 	}
 }
 

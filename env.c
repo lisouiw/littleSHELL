@@ -6,21 +6,27 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:13:45 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/04 07:04:25 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/05 18:13:59 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+void	free_elem(t_env *tmp)
+{
+	free(tmp->name);
+	free(tmp->ctn);
+	free(tmp);
+}
+
 void	b_export(char *cut, t_env **env)
 {
-	int		i;
 	t_env	*tmp;
 	t_env	*kp;
 
-	i = 0;
+	tmp = NULL;
 	kp = *env;
-	if ((ft_strchr(cut, '=')))
+	if (ft_strchr(cut, '='))
 	{
 		tmp = add_env(cut, NULL, ft_strlen(ft_strchr(cut, '=')),
 				ft_strlen(cut));
@@ -39,26 +45,19 @@ void	b_export(char *cut, t_env **env)
 					ft_strlen(cut));
 		}
 	}
-	free(tmp->name);
-	free(tmp->ctn);
-	free(tmp);
+	free_elem(tmp);
 }
 
-void	b_unset(char **cut, t_env **env)
+void	b_unset(char **cut, t_env **env, int i)
 {
-	int		i;
 	t_env	*kp;
 	t_env	*sup;
 
-	i = 0;
-	while (cut[++i])
+	while (cut[++i] && (kp = *env))
 	{
-		kp = *env;
 		if (ft_strcmp(kp->name, cut[i]) == 61)
 		{
-			free(kp->name);
-			free(kp->ctn);
-			free(kp);
+			free_elem(kp);
 			*env = (*env)->next;
 		}
 		while (kp && kp->next != NULL)
@@ -67,10 +66,8 @@ void	b_unset(char **cut, t_env **env)
 			{
 				sup = kp->next;
 				kp->next = kp->next->next;
-				free(sup->name);
-				free(sup->ctn);
-				free(sup);
-				break;
+				free_elem(sup);
+				break ;
 			}
 			kp = kp->next;
 		}
@@ -84,7 +81,7 @@ t_env	*add_env(char *environ, t_env *env, size_t one, size_t all)
 
 	new = (t_env*)malloc(sizeof(t_env));
 	new->name = ft_strsub(environ, 0, all - one + 1);
-	new->ctn = ft_strsub(environ, all - one + 1, one -1);
+	new->ctn = ft_strsub(environ, all - one + 1, one - 1);
 	new->next = NULL;
 	if (!(env))
 		return (new);

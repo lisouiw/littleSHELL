@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/04 06:28:50 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/04 06:28:53 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/05 17:59:11 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ char			**strsplit_two_c(char const *s, char c, char d)
 		else
 		{
 			spl[t++] = ft_strsub(s, i, ft_size_w(s, c, d, i));
-			i += ft_size_w(s, c, d,  i);
+			i += ft_size_w(s, c, d, i);
 		}
 	}
 	spl[t] = NULL;

@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/03 18:01:20 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/04 07:13:21 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/05 18:12:49 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,11 @@ void	cd_home(t_env **env, char *buf)
 	{
 		if (chdir(tmp->ctn) == 0)
 		{
-			b_export(ft_strjoin("OLDPWD=", buf), &(*env));
+			b_export((b = ft_strjoin("OLDPWD=", buf)), &(*env));
+			free(b);
 			getcwd(buf, PATH_MAX);
-			b_export(ft_strjoin("PWD=", buf), &(*env));
+			b_export((b = ft_strjoin("PWD=", buf)), &(*env));
+			free(b);
 		}
 		else
 		{
@@ -81,19 +83,28 @@ void	cd_name(t_env **env, char *cd, char *user, char *buf)
 		free(b);
 	}
 	else
-		printf("EROOOOOOOOOOR\n");
+	{
+		ft_putstr("cd: no such user or named directory: ");
+		ft_putendl(cd);
+	}
 	free(user);
 }
 
-void	cd_slash(t_env **env, char *cd, char *buf)
+void	cd_slash(t_env **env, char *cd, char *buf, char *real)
 {
+	char	*b;
+
 	if (chdir(cd) == 0)
 	{
-		b_export(ft_strjoin("OLDPWD=", buf), &(*env));
+		b_export((b = ft_strjoin("OLDPWD=", buf)), &(*env));
+		free(b);
 		getcwd(buf, 127);
-		b_export(ft_strjoin("PWD=", buf), &(*env));
+		b_export((b = ft_strjoin("PWD=", buf)), &(*env));
+		free(b);
 	}
 	else
-		printf("EROOOOOOOOOOR\n");
+	{
+		ft_putstr("cd: no such file or directory: ");
+		ft_putendl(real);
+	}
 }
-

@@ -6,22 +6,22 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/04 06:28:22 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/04 06:28:25 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/05 14:33:36 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	free_list(t_env *env)
+void	free_list(t_env **env)
 {
 	t_env		*tmp;
 
-	while (env != NULL)
+	while (*env != NULL)
 	{
-		free(env->name);
-		free(env->ctn);
-		tmp = env->next;
-		free(env);
-		env = tmp;
+		tmp = (*env)->next;
+		free((*env)->name);
+		free((*env)->ctn);
+		free(*env);
+		*env = tmp;
 	}
 }
