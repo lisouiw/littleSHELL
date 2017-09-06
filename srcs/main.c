@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/05 18:23:21 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/06 17:12:59 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,12 @@ int		give_path(t_env *env, char **cut, int i, int a)
 void	b_other(char **cut, t_env *env)
 {
 	pid_t	father;
-	int		w;
 
 	if (access(cut[0], F_OK) == 0)
 	{
-		father = fork();
-		if (waitpid(father, &w, 0) && father == 0)
+		if ((father = fork()) < 0)
+			exit(1);
+		if (wait(0) && father == 0)
 			execve(cut[0], cut, NULL);
 	}
 	else
@@ -98,6 +98,8 @@ t_env	*exec_cmd(char *line, t_env *env, char **cut, int i)
 		b_unset(cut, &env, 0);
 	else if (ft_strcmp("cd", cut[0]) == 0)
 		b_cd(cut[1], &env);
+	else if (ft_strcmp(line, "exit") == 0)
+		exit(0);
 	else
 		b_other(cut, env);
 	free_tab(cut);
@@ -108,22 +110,19 @@ int		main(void)
 {
 	char	*line;
 	t_env	*envs;
+	int		i;
 
 	line = NULL;
 	envs = give_env(NULL);
 	while (42)
 	{
 		ft_putstr("(. Y .)> ");
-		if (get_next_line(0, &line) && ft_strcmp(line, "exit") == 0)
-		{
-			free(line);
-			free_list(&envs);
+		if ((i = get_next_line(0, &line)) == 0 )
 			exit(0);
-		}
 		else if (line && ft_strlen(line) > 0 &&
 				(envs = exec_cmd(line, envs, NULL, 0)))
-			free(line);
-		else if (!(line))
+			ft_strdel(&line);
+		else if (!(line) || line == NULL)
 		{
 			ft_putchar(0);
 			exit(0);
