@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/06 11:45:56 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/06 11:46:00 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/06 18:36:35 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,12 @@ void	double_char_c(char **ar, int i, char c)
 		ft_putchar(c);
 	}
 	write(1, "\n", 1);
+}
+
+int		free_for_exit(char *line, char **cut, t_env *env)
+{
+	ft_strdel(&line);
+	free_tab(cut);
+	free_list(&env);
+	return (1);
 }

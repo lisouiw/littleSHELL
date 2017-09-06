@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/06 16:25:20 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/06 18:37:13 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct		s_env
 	struct s_env	*next;
 }					t_env;
 
+int					free_for_exit(char *line, char **cut, t_env *env);
 char				**strsplit_two_c(char const *s, char c, char d);
 char				*give_echo(char *join2, int *o, char *rd, int i);
 void				b_echo(char *join, int o, char *rd);

@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:13:45 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/06 16:13:20 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/06 18:41:31 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	free_elem(t_env *tmp)
 {
-	free(tmp->name);
-	free(tmp->ctn);
+	ft_strdel(&tmp->name);
+	ft_strdel(&tmp->ctn);
 	free(tmp);
 }
 
@@ -58,18 +58,21 @@ void	b_unset(char **cut, t_env **env, int i)
 		if (ft_strcmp(kp->name, cut[i]) == 61)
 		{
 			free_elem(kp);
-			*env = (*env)->next;
+			(*env) = (*env)->next;
 		}
-		while (kp && kp->next != NULL)
+		else
 		{
-			if (ft_strcmp(kp->next->name, cut[i]) == 61)
+			while (kp && kp->next != NULL)
 			{
-				sup = kp->next;
-				kp->next = kp->next->next;
-				free_elem(sup);
-				break ;
+				if (ft_strcmp(kp->next->name, cut[i]) == 61)
+				{
+					sup = kp->next;
+					kp->next = kp->next->next;
+					free_elem(sup);
+					break ;
+				}
+				kp = kp->next;
 			}
-			kp = kp->next;
 		}
 	}
 }

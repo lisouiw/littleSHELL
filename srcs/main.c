@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/06 17:12:59 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/06 18:37:43 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,12 +81,8 @@ t_env	*exec_cmd(char *line, t_env *env, char **cut, int i)
 	if (!(cut = strsplit_two_c(line, '\t', ' ')) || !cut[0])
 		return (env);
 	if (ft_strcmp("echo", cut[0]) == 0)
-	{
-		if (ft_strchr(line, '"') == NULL && ft_strchr(line, 39) == NULL)
-			double_char_c(cut, 0, ' ');
-		else
-			b_echo(NULL, 0, no_b_spc(line));
-	}
+		(ft_strchr(line, '"') == NULL && ft_strchr(line, 39) == NULL)
+			? double_char_c(cut, 0, ' ') : b_echo(NULL, 0, no_b_spc(line));
 	else if (ft_strcmp("env", cut[0]) == 0)
 		ecriture_info(env);
 	else if (ft_strcmp("export", cut[0]) == 0 && cut[1])
@@ -98,7 +94,7 @@ t_env	*exec_cmd(char *line, t_env *env, char **cut, int i)
 		b_unset(cut, &env, 0);
 	else if (ft_strcmp("cd", cut[0]) == 0)
 		b_cd(cut[1], &env);
-	else if (ft_strcmp(line, "exit") == 0)
+	else if (ft_strcmp(line, "exit") == 0 && free_for_exit(line, cut, env))
 		exit(0);
 	else
 		b_other(cut, env);
@@ -117,13 +113,17 @@ int		main(void)
 	while (42)
 	{
 		ft_putstr("(. Y .)> ");
-		if ((i = get_next_line(0, &line)) == 0 )
+		if ((i = get_next_line(0, &line)) == 0)
+		{
+			free_list(&envs);
 			exit(0);
+		}
 		else if (line && ft_strlen(line) > 0 &&
 				(envs = exec_cmd(line, envs, NULL, 0)))
 			ft_strdel(&line);
 		else if (!(line) || line == NULL)
 		{
+			free_list(&envs);
 			ft_putchar(0);
 			exit(0);
 		}
