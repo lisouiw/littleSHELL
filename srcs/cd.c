@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/03 18:01:20 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/05 18:12:49 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/06 11:20:21 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void	cd_name(t_env **env, char *cd, char *user, char *buf)
 	free(user);
 }
 
-void	cd_slash(t_env **env, char *cd, char *buf, char *real)
+void	cd_simple(t_env **env, char *cd, char *buf, char *real)
 {
 	char	*b;
 
@@ -123,6 +123,6 @@ void	b_cd(char *cd, t_env **env)
 	else if (cd[0] == '~')
 		cd_name(env, cd, NULL, buf);
 	else
-		cd_slash(env, cd[0] == '/' ? cd : way, buf, cd);
+		cd_simple(env, cd[0] == '/' ? cd : way, buf, cd);
 	free(way);
 }

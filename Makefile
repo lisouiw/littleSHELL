@@ -6,7 +6,7 @@
 #    By: ltran <marvin@42.fr>                       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/06/23 14:18:46 by ltran             #+#    #+#              #
-#    Updated: 2017/06/23 15:39:18 by ltran            ###   ########.fr        #
+#    Updated: 2017/09/06 11:50:47 by ltran            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CC = gcc
 
 SRCDIR = srcs
 
-FLAGS = -Wall -Werror -Wextra
+FLAGS = -Wall -Werror -Wextra -g
 
 SRCS = cd.c echo.c env.c main.c strsplit_two_c.c tools.c
 

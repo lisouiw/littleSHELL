@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/04 06:28:50 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/05 17:59:11 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/06 12:28:46 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,10 @@ static int		ft_size_w(char const *s, char c, char d, int i)
 
 char			**strsplit_two_c(char const *s, char c, char d)
 {
-	char	**spl;
-	int		w;
-	int		t;
-	int		i;
+	char		**spl;
+	int			w;
+	int			t;
+	size_t		i;
 
 	if (!s)
 		return (NULL);
@@ -57,7 +57,7 @@ char			**strsplit_two_c(char const *s, char c, char d)
 	i = -1;
 	if (!(spl = (char**)malloc(sizeof(char *) * (w + 1))))
 		return (NULL);
-	while (s[++i] != '\0' && t != w)
+	while (++i < ft_strlen(s))
 	{
 		if (s[i] == c || s[i] == d)
 			;

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   tools.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/09/04 06:28:22 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/05 14:33:36 by ltran            ###   ########.fr       */
+/*   Created: 2017/09/06 11:45:56 by ltran             #+#    #+#             */
+/*   Updated: 2017/09/06 11:46:00 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,6 @@ char	*t_strjoin(char *f, char *s, char *t)
 	way = ft_strjoin(tmp, t);
 	free(tmp);
 	return (way);
-}
-
-void	double_char(char **ar, int i)
-{
-	while (ar[++i])
-		ft_putendl(ar[i]);
 }
 
 void	free_tab(char **array)
