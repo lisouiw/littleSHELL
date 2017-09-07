@@ -6,25 +6,11 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/07 18:32:05 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/07 18:37:54 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-void	ecriture_info(t_env *lst)
-{
-	if (!(lst))
-		return ;
-	while (lst->next != NULL)
-	{
-		ft_putstr(lst->name);
-		ft_putendl(lst->ctn);
-		lst = lst->next;
-	}
-	ft_putstr(lst->name);
-	ft_putendl(lst->ctn);
-}
 
 int		give_path(t_env *env, char **cut, int i, char **tab_env)
 {

@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/07 15:58:19 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/07 18:37:32 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,5 +57,6 @@ void				ecriture_info(t_env *lst);
 int					give_path(t_env *env, char **cut, int i, char **tab_env);
 void				b_other(char **cut, t_env *env);
 t_env				*exec_cmd(char *line, t_env *env, char **cut, int i);
+char				**list_to_tab(t_env *env, char **tab_env);
 
 #endif

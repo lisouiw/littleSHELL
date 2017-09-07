@@ -6,11 +6,25 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:29:27 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/07 18:27:35 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/07 18:36:56 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	ecriture_info(t_env *lst)
+{
+	if (!(lst))
+		return ;
+	while (lst->next != NULL)
+	{
+		ft_putstr(lst->name);
+		ft_putendl(lst->ctn);
+		lst = lst->next;
+	}
+	ft_putstr(lst->name);
+	ft_putendl(lst->ctn);
+}
 
 char	*give_echo(char *join2, int *o, char *rd, int i)
 {
