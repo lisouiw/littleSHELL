@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:29:27 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/07 18:27:35 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/07 17:40:45 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ char	*give_echo(char *join2, int *o, char *rd, int i)
 	int		a;
 
 	a = -1;
-	if (!(join2 = (char*)malloc((ft_strlen(rd) + 2) * sizeof(char))))
+	if (!(join2 = (char*)malloc((ft_strlen(rd) + 1) * sizeof(char))))
 		return (NULL);
 	while (rd[++a])
 	{
@@ -46,7 +46,6 @@ void	b_echo(char *join, int o, char *rd)
 	char		*tmp;
 	char		*join2;
 
-	line = "\0";
 	join2 = NULL;
 	if ((join2 = give_echo(join2, &o, rd, 0)) == NULL)
 		return ;
@@ -60,12 +59,11 @@ void	b_echo(char *join, int o, char *rd)
 	else
 	{
 		o == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
-		get_next_line(0, &line);
-		b_echo((tmp == NULL ? join2 : tmp), o, line);
+		printf("---->%i\n",get_next_line(0, &line))
+		b_echo(join2, o, line);
 		ft_strdel(&join2);
 		ft_strdel(&tmp);
-		if (ft_strcmp(line, "\0") != 0)
-			ft_strdel(&line);
+		ft_strdel(&line);
 	}
 }
 

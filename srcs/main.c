@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/06 18:37:43 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/07 18:32:05 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,14 @@ void	ecriture_info(t_env *lst)
 	ft_putendl(lst->ctn);
 }
 
-int		give_path(t_env *env, char **cut, int i, int a)
+int		give_path(t_env *env, char **cut, int i, char **tab_env)
 {
 	char	**path;
 	char	*cmd;
 	pid_t	father;
-	int		w;
+	int		a;
 
+	a = -1;
 	while (env && env->next != NULL && ft_strcmp("PATH=", env->name) != 0)
 		env = env->next;
 	if (env && ft_strcmp("PATH=", env->name) == 0 &&
@@ -44,9 +45,8 @@ int		give_path(t_env *env, char **cut, int i, int a)
 			if ((a = access(cmd, F_OK)) == 0)
 			{
 				father = fork();
-				waitpid(father, &w, 0);
-				if (father == 0)
-					execve(cmd, cut, NULL);
+				if (wait(0) && father == 0)
+					execve(cmd, cut, tab_env);
 			}
 			free(cmd);
 		}
@@ -55,25 +55,52 @@ int		give_path(t_env *env, char **cut, int i, int a)
 	return (a);
 }
 
+char	**list_to_tab(t_env *env, char **tab_env)
+{
+	t_env	*tmp;
+	int		i;
+
+	i = 0;
+	tmp = env;
+	while (tmp != NULL)
+	{
+		tmp = tmp->next;
+		++i;
+	}
+	if (!(tab_env = (char**)malloc(sizeof(char *) * (i + 1))))
+		return (NULL);
+	i = 0;
+	while (env != NULL)
+	{
+		tab_env[i++] = ft_strjoin(env->name, env->ctn);
+		env = env->next;
+	}
+	tab_env[i] = NULL;
+	return (tab_env);
+}
+
 void	b_other(char **cut, t_env *env)
 {
 	pid_t	father;
+	char	**tab_env;
 
+	tab_env = list_to_tab(env, NULL);
 	if (access(cut[0], F_OK) == 0)
 	{
 		if ((father = fork()) < 0)
 			exit(1);
 		if (wait(0) && father == 0)
-			execve(cut[0], cut, NULL);
+			execve(cut[0], cut, tab_env);
 	}
 	else
 	{
-		if (give_path(env, cut, -1, -1) == -1)
+		if (give_path(env, cut, -1, tab_env) == -1)
 		{
 			ft_putstr("sh : command not found: ");
 			ft_putendl(cut[0]);
 		}
 	}
+	free_tab(tab_env);
 }
 
 t_env	*exec_cmd(char *line, t_env *env, char **cut, int i)
@@ -121,12 +148,6 @@ int		main(void)
 		else if (line && ft_strlen(line) > 0 &&
 				(envs = exec_cmd(line, envs, NULL, 0)))
 			ft_strdel(&line);
-		else if (!(line) || line == NULL)
-		{
-			free_list(&envs);
-			ft_putchar(0);
-			exit(0);
-		}
 	}
 	return (0);
 }
