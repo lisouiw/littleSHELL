@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:13:45 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/06 18:41:31 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/07 13:11:05 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ void	b_unset(char **cut, t_env **env, int i)
 	{
 		if (ft_strcmp(kp->name, cut[i]) == 61)
 		{
-			free_elem(kp);
 			(*env) = (*env)->next;
+			free_elem(kp);
 		}
 		else
 		{
