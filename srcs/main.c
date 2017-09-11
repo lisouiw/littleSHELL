@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/07 18:37:54 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/11 17:09:38 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@ int		give_path(t_env *env, char **cut, int i, char **tab_env)
 	if (env && ft_strcmp("PATH=", env->name) == 0 &&
 			(path = ft_strsplit(env->ctn, ':')))
 	{
-		while (path[++i] && a == -1)
+		while (path[++i] && a == -1 && (cmd = t_strjoin(path[i], "/", cut[0])))
 		{
-			cmd = t_strjoin(path[i], "/", cut[0]);
 			if ((a = access(cmd, F_OK)) == 0)
 			{
-				father = fork();
+				if ((father = fork()) < 0)
+					exit(1);
 				if (wait(0) && father == 0)
 					execve(cmd, cut, tab_env);
 			}
@@ -70,13 +70,18 @@ void	b_other(char **cut, t_env *env)
 	pid_t	father;
 	char	**tab_env;
 
-	tab_env = list_to_tab(env, NULL);
-	if (access(cut[0], F_OK) == 0)
+	if (((tab_env = list_to_tab(env, NULL)) && access(cut[0], F_OK) == 0))
 	{
 		if ((father = fork()) < 0)
 			exit(1);
 		if (wait(0) && father == 0)
-			execve(cut[0], cut, tab_env);
+			if (execve(cut[0], cut, tab_env) == -1)
+			{
+				ft_putstr("sh : command not found: ");
+				ft_putendl(cut[0]);
+				free_tab(tab_env);
+				exit(-1);
+			}
 	}
 	else
 	{
