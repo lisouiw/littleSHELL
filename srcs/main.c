@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/11 17:09:38 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/12 10:53:18 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ char	**list_to_tab(t_env *env, char **tab_env)
 	return (tab_env);
 }
 
-void	b_other(char **cut, t_env *env)
+void	b_other(char **cut, t_env *env, int **i)
 {
 	pid_t	father;
 	char	**tab_env;
@@ -77,24 +77,23 @@ void	b_other(char **cut, t_env *env)
 		if (wait(0) && father == 0)
 			if (execve(cut[0], cut, tab_env) == -1)
 			{
-				ft_putstr("sh : command not found: ");
+				ft_putstr("sh: command not found: ");
 				ft_putendl(cut[0]);
-				free_tab(tab_env);
-				exit(-1);
+				**i = -1;
 			}
 	}
 	else
 	{
 		if (give_path(env, cut, -1, tab_env) == -1)
 		{
-			ft_putstr("sh : command not found: ");
+			ft_putstr("sh: command not found: ");
 			ft_putendl(cut[0]);
 		}
 	}
 	free_tab(tab_env);
 }
 
-t_env	*exec_cmd(char *line, t_env *env, char **cut, int i)
+t_env	*exec_cmd(char *line, t_env *env, char **cut, int *i)
 {
 	if (!(cut = strsplit_two_c(line, '\t', ' ')) || !cut[0])
 		return (env);
@@ -105,8 +104,8 @@ t_env	*exec_cmd(char *line, t_env *env, char **cut, int i)
 		ecriture_info(env);
 	else if (ft_strcmp("export", cut[0]) == 0 && cut[1])
 	{
-		while (cut[++i])
-			b_export(cut[i], &env);
+		while (cut[++(*i)])
+			b_export(cut[*i], &env);
 	}
 	else if (env && ft_strcmp("unset", cut[0]) == 0)
 		b_unset(cut, &env, 0);
@@ -115,7 +114,7 @@ t_env	*exec_cmd(char *line, t_env *env, char **cut, int i)
 	else if (ft_strcmp(line, "exit") == 0 && free_for_exit(line, cut, env))
 		exit(0);
 	else
-		b_other(cut, env);
+		b_other(cut, env, &i);
 	free_tab(cut);
 	return (env);
 }
@@ -130,15 +129,18 @@ int		main(void)
 	envs = give_env(NULL);
 	while (42)
 	{
+		i = 0;
 		ft_putstr("(. Y .)> ");
-		if ((i = get_next_line(0, &line)) == 0)
+		if (get_next_line(0, &line) == 0)
 		{
 			free_list(&envs);
 			exit(0);
 		}
 		else if (line && ft_strlen(line) > 0 &&
-				(envs = exec_cmd(line, envs, NULL, 0)))
+				(envs = exec_cmd(line, envs, NULL, &i)))
 			ft_strdel(&line);
+		if (i == -1)
+			exit(i);
 	}
 	return (0);
 }
