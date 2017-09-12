@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/12 10:53:18 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/12 16:51:10 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,18 +96,18 @@ void	b_other(char **cut, t_env *env, int **i)
 t_env	*exec_cmd(char *line, t_env *env, char **cut, int *i)
 {
 	if (!(cut = strsplit_two_c(line, '\t', ' ')) || !cut[0])
-		return (env);
-	if (ft_strcmp("echo", cut[0]) == 0)
+		;
+	else if (ft_strcmp("echo", cut[0]) == 0)
 		(ft_strchr(line, '"') == NULL && ft_strchr(line, 39) == NULL)
-			? double_char_c(cut, 0, ' ') : b_echo(NULL, 0, no_b_spc(line));
+			? b_echo(cut, env) : b_echo_w(NULL, 0, no_b_spc(line));
 	else if (ft_strcmp("env", cut[0]) == 0)
 		ecriture_info(env);
-	else if (ft_strcmp("export", cut[0]) == 0 && cut[1])
+	else if (ft_strcmp("setenv", cut[0]) == 0 && cut[1])
 	{
 		while (cut[++(*i)])
 			b_export(cut[*i], &env);
 	}
-	else if (env && ft_strcmp("unset", cut[0]) == 0)
+	else if (env && ft_strcmp("unsetenv", cut[0]) == 0)
 		b_unset(cut, &env, 0);
 	else if (ft_strcmp("cd", cut[0]) == 0)
 		b_cd(cut[1], &env);

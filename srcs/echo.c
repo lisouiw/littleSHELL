@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:29:27 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/07 18:36:56 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/12 19:21:03 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ char	*give_echo(char *join2, int *o, char *rd, int i)
 			*o = (*o == 0) ? 1 : 0;
 		else if (rd[a] == '"' && (*o == 0 || *o == 2))
 			*o = (*o == 0) ? 2 : 0;
+		else if (rd[a] == '$' && rd[a + 1] != '\t' && rd[a + 1] != ' ')
+			;
 		else if (rd[a] != '"' && rd[a] != 39 && rd[a] != ' ' && rd[a] != '\t')
 			join2[i++] = rd[a];
 		else if ((rd[a] == ' ' || rd[a] == '\t') && *o != 0)
@@ -54,7 +56,7 @@ char	*give_echo(char *join2, int *o, char *rd, int i)
 	return (join2);
 }
 
-void	b_echo(char *join, int o, char *rd)
+void	b_echo_w(char *join, int o, char *rd)
 {
 	char		*line;
 	char		*tmp;
@@ -75,12 +77,99 @@ void	b_echo(char *join, int o, char *rd)
 	{
 		o == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
 		get_next_line(0, &line);
-		b_echo((tmp == NULL ? join2 : tmp), o, line);
+		b_echo_w((tmp == NULL ? join2 : tmp), o, line);
 		ft_strdel(&join2);
 		ft_strdel(&tmp);
 		if (ft_strcmp(line, "\0") != 0)
 			ft_strdel(&line);
 	}
+}
+
+
+t_env	*add_var(char *ctn, t_env *var)
+{
+	t_env	*new;
+	t_env	*tmp;
+
+	new = (t_env*)malloc(sizeof(t_env));
+	new->name = NULL;
+	new->ctn = (ctn == NULL) ? NULL : ft_strdup(ctn);
+	new->next = NULL;
+	if (!(var))
+		return (new);
+	tmp = var;
+	while (tmp->next != NULL)
+		tmp = tmp->next;
+	tmp->next = new;
+	return (var);
+}
+
+t_env	*give_var(char *cut, t_env *env, t_env *var)
+{
+	char	*spl;
+	char	**dl;
+
+	dl = NULL;
+	spl = ft_strchr(cut, '$');
+	if (spl == NULL)
+		var = add_var(cut, var);
+	else if (ft_strlen(cut) != ft_strlen(spl))
+	{
+		printf("recup\n");
+		spl = ft_strsub(cut, 0, ft_strlen(cut) - ft_strlen(spl));
+	}
+	if (spl != NULL)
+		dl = ft_strsplit(spl, '$');
+	double_char_c(dl, -1, ' ');
+	env = NULL;
+
+	return (var);
+}
+
+void	b_echo(char **cut, t_env *env)
+{
+	t_env	*var;
+	int		i;
+	int		y;
+	int		a;
+
+	i = 0;
+	a = 0;
+	y = -1;
+	var = NULL;
+	while (cut[++i])
+		var = give_var(cut[i], env, var);
+/*	i = 0;
+	while (cut[++i] && (y = -1))
+	{
+		if (a == 1)
+		{
+			a = 0;
+			write (1, " " , 1);
+		}
+		while (cut[i][++y])
+		{
+			while ((cut[i][y] == '$' && cut[i][y + 1]))
+			{
+				if (var->ctn != NULL)
+				{
+					a = 1;
+					ft_putstr(var->ctn);
+				}
+				while (cut[i][++y] != '$' && cut[i][y] != '\0')
+						;
+				var = var->next;
+			}
+			if ((cut[i][y] != '$' && (cut[i][y] != '\0') ) || (cut[i][y] == '$' && !(cut[i][y + 1])))
+			{
+			//	printf("----%s--->%c|\n",cut[i], cut[i][y]);
+				a = 1;
+				write (1, &cut[i][y], 1);
+			}
+		}
+	}
+	write (1, "\n" , 1);
+	free_list(&var);*/
 }
 
 void	*no_b_spc(char *s)
