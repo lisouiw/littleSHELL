@@ -39,7 +39,7 @@ char	*give_echo(char *join2, int *o, char *rd, int i)
 			*o = (*o == 0) ? 1 : 0;
 		else if (rd[a] == '"' && (*o == 0 || *o == 2))
 			*o = (*o == 0) ? 2 : 0;
-		else if (rd[a] == '$' && rd[a + 1] != '\t' && rd[a + 1] != ' ')
+		else if (rd[a] == '$')
 			;
 		else if (rd[a] != '"' && rd[a] != 39 && rd[a] != ' ' && rd[a] != '\t')
 			join2[i++] = rd[a];
@@ -106,23 +106,32 @@ t_env	*add_var(char *ctn, t_env *var)
 
 t_env	*give_var(char *cut, t_env *env, t_env *var)
 {
-	char	*spl;
-	char	**dl;
+	t_env	*tmp;
+	int		i;
+	int		n;
 
-	dl = NULL;
-	spl = ft_strchr(cut, '$');
-	if (spl == NULL)
-		var = add_var(cut, var);
-	else if (ft_strlen(cut) != ft_strlen(spl))
+	i = 0;
+	while (cut[i] && (tmp = env))
 	{
-		printf("recup\n");
-		spl = ft_strsub(cut, 0, ft_strlen(cut) - ft_strlen(spl));
+		while(cut[i] && cut[i] != '$')
+			++i;
+		if (cut[i] != '$')
+			return (var);
+		if (cut[i + 1] == '\0' || cut[i + 1] == '\t' || cut[i + 1] == ' ')
+			var = (i == 0 || cut[i - 1] != '$') ? add_var("$", var) : add_var(NULL, var);
+		else if (cut[i + 1] != '$')
+		{
+			n = (ft_strchr(&cut[i + 1], '$')) == NULL ? 0 :
+				ft_strlen(ft_strchr(&cut[i + 1], '$'));
+			n = ft_strlen(&cut[i + 1]) - n;
+			while (tmp != NULL && ft_strncmp(&cut[i + 1], tmp->name, n) != 0)
+				tmp = tmp->next;
+			var = (tmp == NULL) ? add_var(NULL, var) : add_var(tmp->ctn, var);
+		}
+		else
+			var = add_var(NULL, var);
+		++i;
 	}
-	if (spl != NULL)
-		dl = ft_strsplit(spl, '$');
-	double_char_c(dl, -1, ' ');
-	env = NULL;
-
 	return (var);
 }
 
@@ -134,42 +143,37 @@ void	b_echo(char **cut, t_env *env)
 	int		a;
 
 	i = 0;
-	a = 0;
-	y = -1;
 	var = NULL;
 	while (cut[++i])
 		var = give_var(cut[i], env, var);
-/*	i = 0;
+	i = 0;
 	while (cut[++i] && (y = -1))
 	{
-		if (a == 1)
-		{
-			a = 0;
-			write (1, " " , 1);
-		}
 		while (cut[i][++y])
 		{
-			while ((cut[i][y] == '$' && cut[i][y + 1]))
+			if (a == 2)
 			{
-				if (var->ctn != NULL)
-				{
-					a = 1;
-					ft_putstr(var->ctn);
-				}
-				while (cut[i][++y] != '$' && cut[i][y] != '\0')
-						;
+				write (1, " " , 1);
+				a = 0;
+			}
+			if (cut[i][y] != '$')
+			{
+				a = 1;
+				write (1, &cut[i][y] , 1);
+			}
+			else
+			{
+				var->ctn == NULL ? 0 : ft_putstr(var->ctn);
+				a = (var->ctn == NULL) ? a : 1;
+				while (cut[i][y + 1] && cut[i][y + 1] != '$')
+					++y;
 				var = var->next;
 			}
-			if ((cut[i][y] != '$' && (cut[i][y] != '\0') ) || (cut[i][y] == '$' && !(cut[i][y + 1])))
-			{
-			//	printf("----%s--->%c|\n",cut[i], cut[i][y]);
-				a = 1;
-				write (1, &cut[i][y], 1);
-			}
 		}
+		a = (a == 1) ? 2 : 0;
 	}
-	write (1, "\n" , 1);
-	free_list(&var);*/
+	write (1, "\n", 1);
+//	free_list(&var);
 }
 
 void	*no_b_spc(char *s)
