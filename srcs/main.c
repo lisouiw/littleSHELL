@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/12 16:51:10 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/14 16:20:11 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,9 @@ t_env	*exec_cmd(char *line, t_env *env, char **cut, int *i)
 	if (!(cut = strsplit_two_c(line, '\t', ' ')) || !cut[0])
 		;
 	else if (ft_strcmp("echo", cut[0]) == 0)
-		(ft_strchr(line, '"') == NULL && ft_strchr(line, 39) == NULL)
-			? b_echo(cut, env) : b_echo_w(NULL, 0, no_b_spc(line), env, cut);
+		b_echo_w(no_b_spc(line), env, NULL);
+//		(ft_strchr(line, '"') == NULL && ft_strchr(line, 39) == NULL)
+//			? b_echo(cut, env) : b_echo_w(NULL, 0, no_b_spc(line), env, cut);
 	else if (ft_strcmp("env", cut[0]) == 0)
 		ecriture_info(env);
 	else if (ft_strcmp("setenv", cut[0]) == 0 && cut[1])

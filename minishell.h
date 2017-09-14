@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/12 19:05:13 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/14 15:29:00 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int					free_for_exit(char *line, char **cut, t_env *env);
 char				**strsplit_two_c(char const *s, char c, char d);
 char				*give_echo(char *join2, int *o, char *rd, int i, t_env *env, char **cut);
 void				b_echo(char **cut, t_env *env);
-void				b_echo_w(char *join, int o, char *rd, t_env *env, char **cut);
+void				b_echo_w(char *rd, t_env *env, char **cut);
 void				*no_b_spc(char *s);
 void				cd_prev(t_env **env, char *buf);
 void				cd_home(t_env **env, char *buf);
@@ -54,7 +54,7 @@ void				b_export(char *cut, t_env **env);
 void				b_unset(char **cut, t_env **env, int i);
 t_env				*add_env(char *environ, t_env *env, size_t one, size_t all);
 t_env				*add_var(char *ctn, t_env *var);
-t_env				*give_var(char *cut, t_env *env, t_env *var);
+t_env				*give_var(char *cut, t_env *env, t_env *var, int i);
 t_env				*give_env(t_env *env);
 void				ecriture_info(t_env *lst);
 int					give_path(t_env *env, char **cut, int i, char **tab_env);
