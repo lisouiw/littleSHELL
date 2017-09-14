@@ -18,7 +18,7 @@ SRCDIR = srcs
 
 FLAGS = -Wall -Werror -Wextra -g
 
-SRCS = cd.c echo.c env.c main.c strsplit_two_c.c tools.c
+SRCS = cd.c echo.c env.c main.c strsplit_two_c.c tools.c cpy.c
 
 SRC_N = $(addprefix $(SRCDIR)/, $(SRCS))
 

@@ -36,9 +36,9 @@ typedef struct		s_env
 
 int					free_for_exit(char *line, char **cut, t_env *env);
 char				**strsplit_two_c(char const *s, char c, char d);
-char				*give_echo(char *join2, int *o, char *rd, int i);
+char				*give_echo(char *join2, int *o, char *rd, int i, t_env *env, char **cut);
 void				b_echo(char **cut, t_env *env);
-void				b_echo_w(char *join, int o, char *rd);
+void				b_echo_w(char *join, int o, char *rd, t_env *env, char **cut);
 void				*no_b_spc(char *s);
 void				cd_prev(t_env **env, char *buf);
 void				cd_home(t_env **env, char *buf);
@@ -61,5 +61,6 @@ int					give_path(t_env *env, char **cut, int i, char **tab_env);
 void				b_other(char **cut, t_env *env, int **i);
 t_env				*exec_cmd(char *line, t_env *env, char **cut, int *i);
 char				**list_to_tab(t_env *env, char **tab_env);
+void				*cpy(char *dst, char *src);
 
 #endif

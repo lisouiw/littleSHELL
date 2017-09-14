@@ -26,12 +26,33 @@ void	ecriture_info(t_env *lst)
 	ft_putendl(lst->ctn);
 }
 
-char	*give_echo(char *join2, int *o, char *rd, int i)
+void	give_chg(char *rd, int *a, t_env **var, char **join, int *i)
+{
+	*join[(*i + 1)] = '\0';
+	if ((*var)->ctn != NULL)
+	{
+		*join = cpy(*join, (*var)->ctn);
+		while (rd[++(*a)] && rd[*a] != ' ' && rd[*a] != '\t' && rd[*a] != '$'
+			&& rd[*a] != 39 && rd[*a] != '"')
+				;
+		*a = *a - 1;
+		*i = *i + ft_strlen((*var)->ctn);
+	}
+	*var = (*var)->next;
+}
+
+char	*give_echo(char *join2, int *o, char *rd, int i, t_env *env, char **cut)
 {
 	int		a;
+	t_env	*var;
+	int		x;
 
+	x = 0;
+	var = NULL;
+	while (cut[++x])
+		var = give_var(cut[x], env, var);
 	a = -1;
-	if (!(join2 = (char*)malloc((ft_strlen(rd) + 2) * sizeof(char))))
+	if (!(join2 = (char*)malloc((ft_strlen(rd) + 1000) * sizeof(char))))
 		return (NULL);
 	while (rd[++a])
 	{
@@ -40,7 +61,7 @@ char	*give_echo(char *join2, int *o, char *rd, int i)
 		else if (rd[a] == '"' && (*o == 0 || *o == 2))
 			*o = (*o == 0) ? 2 : 0;
 		else if (rd[a] == '$')
-			;
+			give_chg(rd, &a, &var, &join2, &i);
 		else if (rd[a] != '"' && rd[a] != 39 && rd[a] != ' ' && rd[a] != '\t')
 			join2[i++] = rd[a];
 		else if ((rd[a] == ' ' || rd[a] == '\t') && *o != 0)
@@ -56,7 +77,8 @@ char	*give_echo(char *join2, int *o, char *rd, int i)
 	return (join2);
 }
 
-void	b_echo_w(char *join, int o, char *rd)
+
+void	b_echo_w(char *join, int o, char *rd, t_env *env, char **cut)
 {
 	char		*line;
 	char		*tmp;
@@ -64,7 +86,7 @@ void	b_echo_w(char *join, int o, char *rd)
 
 	line = "\0";
 	join2 = NULL;
-	if ((join2 = give_echo(join2, &o, rd, 0)) == NULL)
+	if ((join2 = give_echo(join2, &o, rd, 0, env, cut)) == NULL)
 		return ;
 	tmp = ft_strjoin(join, join2);
 	if (o == 0)
@@ -75,9 +97,11 @@ void	b_echo_w(char *join, int o, char *rd)
 	}
 	else
 	{
+	//free tab
 		o == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
 		get_next_line(0, &line);
-		b_echo_w((tmp == NULL ? join2 : tmp), o, line);
+		cut = strsplit_two_c(line, ' ', '\t');
+		b_echo_w((tmp == NULL ? join2 : tmp), o, line, env, cut);
 		ft_strdel(&join2);
 		ft_strdel(&tmp);
 		if (ft_strcmp(line, "\0") != 0)
@@ -124,6 +148,7 @@ t_env	*give_var(char *cut, t_env *env, t_env *var)
 			n = (ft_strchr(&cut[i + 1], '$')) == NULL ? 0 :
 				ft_strlen(ft_strchr(&cut[i + 1], '$'));
 			n = ft_strlen(&cut[i + 1]) - n;
+		//	printf("|%s| N->%i\n",cut, n);
 			while (tmp != NULL && ft_strncmp(&cut[i + 1], tmp->name, n) != 0)
 				tmp = tmp->next;
 			var = (tmp == NULL) ? add_var(NULL, var) : add_var(tmp->ctn, var);

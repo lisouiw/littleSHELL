@@ -99,7 +99,7 @@ t_env	*exec_cmd(char *line, t_env *env, char **cut, int *i)
 		;
 	else if (ft_strcmp("echo", cut[0]) == 0)
 		(ft_strchr(line, '"') == NULL && ft_strchr(line, 39) == NULL)
-			? b_echo(cut, env) : b_echo_w(NULL, 0, no_b_spc(line));
+			? b_echo(cut, env) : b_echo_w(NULL, 0, no_b_spc(line), env, cut);
 	else if (ft_strcmp("env", cut[0]) == 0)
 		ecriture_info(env);
 	else if (ft_strcmp("setenv", cut[0]) == 0 && cut[1])
