@@ -6,7 +6,7 @@
 #    By: ltran <marvin@42.fr>                       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/06/23 14:18:46 by ltran             #+#    #+#              #
-#    Updated: 2017/09/12 14:04:17 by ltran            ###   ########.fr        #
+#    Updated: 2017/09/18 14:49:54 by ltran            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ SRCDIR = srcs
 
 FLAGS = -Wall -Werror -Wextra -g
 
-SRCS = cd.c echo.c env.c main.c strsplit_two_c.c tools.c cpy.c
+SRCS = cd.c echo.c env.c main.c strsplit_two_c.c tools.c tools_two.c var.c
 
 SRC_N = $(addprefix $(SRCDIR)/, $(SRCS))
 

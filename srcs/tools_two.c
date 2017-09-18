@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cpy.c                                              :+:      :+:    :+:   */
+/*   tools_two.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/09/18 12:00:41 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/18 12:00:54 by ltran            ###   ########.fr       */
+/*   Created: 2017/09/18 14:37:20 by ltran             #+#    #+#             */
+/*   Updated: 2017/09/18 14:37:59 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,33 @@ void	*cpy(char *dst, char *src)
 	}
 	dst[a] = '\0';
 	return (dst);
+}
+
+void		ecriture_info(t_env *lst)
+{
+	if (!(lst))
+		return ;
+	while (lst->next != NULL)
+	{
+		ft_putstr(lst->name);
+		ft_putendl(lst->ctn);
+		lst = lst->next;
+	}
+	ft_putstr(lst->name);
+	ft_putendl(lst->ctn);
+}
+
+void		*no_b_spc(char *s)
+{
+	int		i;
+	char	*b;
+
+	i = 0;
+	b = (char*)s;
+	while ((b[i] == ' ' || b[i] == '\t') && b[i] != '\0')
+		++i;
+	i += 4;
+	while ((b[i] == ' ' || b[i] == '\t') && b[i] != '\0')
+		++i;
+	return (&b[i]);
 }
