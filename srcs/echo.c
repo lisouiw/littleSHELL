@@ -6,13 +6,13 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:29:27 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/15 16:52:42 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 12:20:53 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ecriture_info(t_env *lst)
+void		ecriture_info(t_env *lst)
 {
 	if (!(lst))
 		return ;
@@ -26,10 +26,10 @@ void	ecriture_info(t_env *lst)
 	ft_putendl(lst->ctn);
 }
 
-t_env	*add_var(char *ctn, t_env *var)
+t_env		*add_var(char *ctn, t_env *var)
 {
-	t_env	*new;
-	t_env	*tmp;
+	t_env		*new;
+	t_env		*tmp;
 
 	new = (t_env*)malloc(sizeof(t_env));
 	new->name = NULL;
@@ -43,36 +43,44 @@ t_env	*add_var(char *ctn, t_env *var)
 	tmp->next = new;
 	return (var);
 }
-int		exist(char c)
+
+int			exist(char c)
 {
 	if (c == '=')
 		return (1);
 	return (0);
 }
 
-
-size_t	give_len(char *cut, size_t len, int i)
+size_t		give_len(char *cut, size_t len, int i)
 {
 	while (cut[++i] && cut[i] != '$' && cut[i] != 39 && cut[i] != '"')
 		++len;
 	return (len);
 }
 
-t_env	*give_var(char *cut, t_env *env, t_env *var, int i)
+t_env		*give_var(char *cut, t_env *env, t_env *var, int i)
 {
-	t_env	*tmp;
-	int		n;
-	int		c;
+	t_env		*tmp;
+	int			n;
+	int			c;
 
 	c = 0;
 	while (cut[++i] && (tmp = env))
 	{
-		while(cut[i] && cut[i] != '$')
+		while (cut[i] && (cut[i] != '$' || c == 1))
+		{
+			if (cut[i] == 39 && c < 2)
+				c = (c == 0) ? 1 : 0;
+			else if (cut[i] == '"' && (c == 0 || c == 2))
+				c = (c == 0) ? 2 : 0;
 			++i;
+		}
 		if (cut[i] != '$')
 			return (var);
-		if (cut[i + 1] == '\0' || cut[i + 1] == '\t' || cut[i + 1] == ' ')
-			var = (i == 0 || cut[i - 1] != '$') ? add_var("$", var) : add_var(NULL, var);
+		if (cut[i + 1] == '\0' || cut[i + 1] == '\t' || cut[i + 1] == ' ' ||
+				cut[i + 1] == '"')
+			var = (i == 0 || cut[i - 1] != '$') ? add_var("$", var) :
+				add_var(NULL, var);
 		else if (cut[i + 1] != '$')
 		{
 			n = give_len(&cut[i + 1], 0, -1);
@@ -87,11 +95,11 @@ t_env	*give_var(char *cut, t_env *env, t_env *var, int i)
 	return (var);
 }
 
-t_env	*var_and_len(char **cut, t_env *env, size_t *len)
+t_env		*var_and_len(char **cut, t_env *env, size_t *len)
 {
-	int		i;
-	t_env	*var;
-	t_env	*tmp;
+	int			i;
+	t_env		*var;
+	t_env		*tmp;
 
 	i = -1;
 	var = NULL;
@@ -107,8 +115,7 @@ t_env	*var_and_len(char **cut, t_env *env, size_t *len)
 	return (var);
 }
 
-
-void	give_chg(char *rd, int *a, t_env **var, char **join, int *i)
+void		give_chg(char *rd, int *a, t_env **var, char **join, int *i)
 {
 	if ((*var)->ctn != NULL)
 	{
@@ -122,8 +129,7 @@ void	give_chg(char *rd, int *a, t_env **var, char **join, int *i)
 	*var = (*var)->next;
 }
 
-
-char	*give_echo(char *join2, int *o, char *rd, size_t len, t_env *var)
+char		*give_echo(char *join2, int *o, char *rd, size_t len, t_env *var)
 {
 	int		a;
 	int		i;
@@ -138,34 +144,38 @@ char	*give_echo(char *join2, int *o, char *rd, size_t len, t_env *var)
 			*o = (*o == 0) ? 1 : 0;
 		else if (rd[a] == '"' && (*o == 0 || *o == 2))
 			*o = (*o == 0) ? 2 : 0;
-		else if (rd[a] == '$')
+		else if (rd[a] == '$' && *o != 1)
 		{
 			join2[i] = '\0';
 			give_chg(rd, &a, &var, &join2, &i);
 		}
-		else if (rd[a] != '"' && rd[a] != 39 && rd[a] != ' ' && rd[a] != '\t')
-			join2[i++] = rd[a];
-		else if ((rd[a] == ' ' || rd[a] == '\t') && *o != 0 && *o != 3)
-			join2[i++] = rd[a];
-		else if ((rd[a] == '"' && *o == 1) || (rd[a] == 39 && *o == 2))
-			join2[i++] = rd[a];
-		else if ((rd[a] == ' ' || rd[a] == '\t') && i > 0 && join2[i - 1] != ' '
-				&& (*o == 0 || *o == 3))
+		else if (*o == 0 && (rd[a] == ' ' || rd[a] == '\t') && i > 0 &&
+			join2[i - 1] != ' ')
 			join2[i++] = ' ';
+		else
+			join2[i++] = rd[a];
 	}
 	join2[i] = '\n';
 	join2[i + 1] = '\0';
 	return (join2);
 }
 
-void	b_echo_w(char *rd, t_env *env, char *keep, int o)
+void	free_echo(char **add, char **tmp, char ***cut, t_env **var)
 {
-	t_env	*var;
-	size_t	len;
-	char	*add;
-	char	*line;
-	char	**cut;
-	char	*tmp;
+	ft_strdel(&(*add));
+	ft_strdel(&(*tmp));
+	free_tab(&(**cut));
+	free_list(&(*var));
+}
+
+void		b_echo_w(char *rd, t_env *env, char *keep, int o)
+{
+	t_env		*var;
+	size_t		len;
+	char		*add;
+	char		*line;
+	char		**cut;
+	char		*tmp;
 
 	line = "\0";
 	len = 0;
@@ -178,34 +188,18 @@ void	b_echo_w(char *rd, t_env *env, char *keep, int o)
 	if (o == 0)
 	{
 		tmp == NULL ? ft_putstr(add) : ft_putstr(tmp);
-	//	ft_strdel(&add);
-	//	ft_strdel(&tmp);
-	//	free_tab(cut);
-	}
 	else
 	{
 		o == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
 		get_next_line(0, &line);
-	//	free_tab(cut);
 		b_echo_w(line, env, (tmp == NULL ? add : tmp), o);
-	//	ft_strdel(&add);
-	//	ft_strdel(&tmp);
-	//	if (ft_strcmp(line, "\0") != 0)
-	//		ft_strdel(&line);
+		free_echo(&add, &tmp, &cut, &var);
+		if (ft_strcmp(line, "\0") != 0)
+			ft_strdel(&line);
 	}
 }
 
-/*	while (var != NULL)
-	{
-		if (var->ctn != NULL)
-			ft_putendl(var->ctn);
-		else
-			ft_putendl("INVALIDE");
-		var = var->next;
-	}
-	exit(0);*/
-
-void	*no_b_spc(char *s)
+void		*no_b_spc(char *s)
 {
 	int		i;
 	char	*b;

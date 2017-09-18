@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/06 11:45:56 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/06 18:36:35 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 11:40:28 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ void	free_tab(char **array)
 		}
 		free(array);
 	}
+	else if (array == NULL)
+		free(array);
 }
 
 void	double_char_c(char **ar, int i, char c)

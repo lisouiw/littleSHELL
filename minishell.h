@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/15 15:50:39 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 12:20:32 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,13 @@ typedef struct		s_env
 	struct s_env	*next;
 }					t_env;
 
+typedef struct		s_ec
+{
+	char			*name;
+	char			*ctn;
+	struct s_env	*next;
+}					t_ec;
+
 int					free_for_exit(char *line, char **cut, t_env *env);
 char				**strsplit_two_c(char const *s, char c, char d);
 void				b_echo(char **cut, t_env *env);
@@ -56,7 +63,7 @@ t_env				*give_var(char *cut, t_env *env, t_env *var, int i);
 t_env				*give_env(t_env *env);
 void				ecriture_info(t_env *lst);
 int					give_path(t_env *env, char **cut, int i, char **tab_env);
-void				b_other(char **cut, t_env *env, int **i);
+void				b_other(char **cut, t_env *env);
 t_env				*exec_cmd(char *line, t_env *env, char **cut, int *i);
 char				**list_to_tab(t_env *env, char **tab_env);
 void				*cpy(char *dst, char *src);

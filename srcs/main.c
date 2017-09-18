@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/15 15:32:30 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 12:01:12 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ char	**list_to_tab(t_env *env, char **tab_env)
 	return (tab_env);
 }
 
-void	b_other(char **cut, t_env *env, int **i)
+void	b_other(char **cut, t_env *env)
 {
 	pid_t	father;
 	char	**tab_env;
@@ -79,7 +79,7 @@ void	b_other(char **cut, t_env *env, int **i)
 			{
 				ft_putstr("sh: command not found: ");
 				ft_putendl(cut[0]);
-				**i = -1;
+				exit(-1);
 			}
 	}
 	else
@@ -113,7 +113,7 @@ t_env	*exec_cmd(char *line, t_env *env, char **cut, int *i)
 	else if (ft_strcmp(line, "exit") == 0 && free_for_exit(line, cut, env))
 		exit(0);
 	else
-		b_other(cut, env, &i);
+		b_other(cut, env);
 	free_tab(cut);
 	return (env);
 }
@@ -135,11 +135,11 @@ int		main(void)
 			free_list(&envs);
 			exit(0);
 		}
-		else if (line && ft_strlen(line) > 0 &&
-				(envs = exec_cmd(line, envs, NULL, &i)))
+		else if (line && ft_strlen(line) > 0)
+		{
+			envs = exec_cmd(line, envs, NULL, &i);
 			ft_strdel(&line);
-		if (i == -1)
-			exit(i);
+		}
 	}
 	return (0);
 }
