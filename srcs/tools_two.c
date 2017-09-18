@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/18 14:37:20 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/18 14:37:59 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 14:51:06 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	*cpy(char *dst, char *src)
 	return (dst);
 }
 
-void		ecriture_info(t_env *lst)
+void	ecriture_info(t_env *lst)
 {
 	if (!(lst))
 		return ;
@@ -46,7 +46,7 @@ void		ecriture_info(t_env *lst)
 	ft_putendl(lst->ctn);
 }
 
-void		*no_b_spc(char *s)
+void	*no_b_spc(char *s)
 {
 	int		i;
 	char	*b;

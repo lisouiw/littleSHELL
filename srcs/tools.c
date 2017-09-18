@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/06 11:45:56 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/18 11:40:28 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 15:14:25 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,16 +53,6 @@ void	free_tab(char **array)
 	}
 	else if (array == NULL)
 		free(array);
-}
-
-void	double_char_c(char **ar, int i, char c)
-{
-	while (ar[++i])
-	{
-		ft_putstr(ar[i]);
-		ft_putchar(c);
-	}
-	write(1, "\n", 1);
 }
 
 int		free_for_exit(char *line, char **cut, t_env *env)

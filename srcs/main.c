@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:12:51 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/18 14:48:37 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 16:20:34 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ void	b_other(char **cut, t_env *env)
 			{
 				ft_putstr("sh: command not found: ");
 				ft_putendl(cut[0]);
+				free_tab(tab_env);
 				exit(-1);
 			}
 	}
@@ -101,9 +102,9 @@ t_env	*exec_cmd(char *line, t_env *env, char **cut, int *i)
 		b_echo_w(no_b_spc(line), env, NULL, 0);
 	else if (ft_strcmp("env", cut[0]) == 0)
 		ecriture_info(env);
-	else if (ft_strcmp("setenv", cut[0]) == 0 && cut[1])
+	else if (ft_strcmp("setenv", cut[0]) == 0)
 	{
-		while (cut[++(*i)])
+		while (cut[1] && cut[++(*i)])
 			b_export(cut[*i], &env);
 	}
 	else if (env && ft_strcmp("unsetenv", cut[0]) == 0)

@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:13:45 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/12 15:37:20 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 15:13:15 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,8 @@ t_env	*add_env(char *environ, t_env *env, size_t one, size_t all)
 	t_env	*new;
 	t_env	*tmp;
 
-	new = (t_env*)malloc(sizeof(t_env));
+	if (!(new = (t_env*)malloc(sizeof(t_env))))
+		return (NULL);
 	new->name = ft_strsub(environ, 0, all - one + 1);
 	new->ctn = ft_strsub(environ, all - one + 1, one - 1);
 	new->next = NULL;

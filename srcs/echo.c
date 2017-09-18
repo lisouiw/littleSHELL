@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:29:27 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/18 14:49:09 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 14:51:21 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	free_echo(char **add, char **tmp, char ***cut, t_env **var)
 	free_list(&(*var));
 }
 
-void		give_chg(char *rd, int *a, t_env **var, int *i)
+void	give_chg(char *rd, int *a, t_env **var, int *i)
 {
 	if ((*var)->ctn != NULL)
 		*i = *i + ft_strlen((*var)->ctn);
@@ -38,7 +38,7 @@ char	*give_end(char *join2, int i)
 	return (join2);
 }
 
-char		*give_echo(t_ec e, int *o, char *rd, t_env *var)
+char	*give_echo(t_ec e, int *o, char *rd, t_env *var)
 {
 	t_ec	s;
 
@@ -67,7 +67,7 @@ char		*give_echo(t_ec e, int *o, char *rd, t_env *var)
 	return (give_end(e.add, s.i));
 }
 
-void		b_echo_w(char *rd, t_env *env, char *keep, int o)
+void	b_echo_w(char *rd, t_env *env, char *keep, int o)
 {
 	t_env		*var;
 	t_ec		e;

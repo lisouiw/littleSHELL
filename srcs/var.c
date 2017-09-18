@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/18 14:34:13 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/18 14:50:08 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 15:54:36 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ size_t		give_len(char *cut, size_t len, int i)
 	return (len);
 }
 
-int		give_i(char *cut, int i, int *c)
+int			give_i(char *cut, int i, int *c)
 {
 	while (cut[i] && (cut[i] != '$' || *c == 1))
 	{
