@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/01 14:29:27 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/18 12:20:53 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 12:41:59 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,14 +129,21 @@ void		give_chg(char *rd, int *a, t_env **var, char **join, int *i)
 	*var = (*var)->next;
 }
 
-char		*give_echo(char *join2, int *o, char *rd, size_t len, t_env *var)
+char	*give_end(char *join2, int i)
+{
+	join2[i] = '\n';
+	join2[i + 1] = '\0';
+	return (join2);
+}
+
+char		*give_echo(t_ec e, int *o, char *rd, t_env *var)
 {
 	int		a;
 	int		i;
 
 	i = 0;
 	a = -1;
-	if (!(join2 = (char*)malloc((ft_strlen(rd) + len + 2) * sizeof(char))))
+	if (!(e.add = (char*)malloc((ft_strlen(rd) + e.len + 2) * sizeof(char))))
 		return (NULL);
 	while (rd[++a])
 	{
@@ -146,18 +153,16 @@ char		*give_echo(char *join2, int *o, char *rd, size_t len, t_env *var)
 			*o = (*o == 0) ? 2 : 0;
 		else if (rd[a] == '$' && *o != 1)
 		{
-			join2[i] = '\0';
-			give_chg(rd, &a, &var, &join2, &i);
+			e.add[i] = '\0';
+			give_chg(rd, &a, &var, &e.add, &i);
 		}
 		else if (*o == 0 && (rd[a] == ' ' || rd[a] == '\t') && i > 0 &&
-			join2[i - 1] != ' ')
-			join2[i++] = ' ';
+			e.add[i - 1] != ' ')
+			e.add[i++] = ' ';
 		else
-			join2[i++] = rd[a];
+			e.add[i++] = rd[a];
 	}
-	join2[i] = '\n';
-	join2[i + 1] = '\0';
-	return (join2);
+	return (give_end(e.add, i));
 }
 
 void	free_echo(char **add, char **tmp, char ***cut, t_env **var)
@@ -171,31 +176,29 @@ void	free_echo(char **add, char **tmp, char ***cut, t_env **var)
 void		b_echo_w(char *rd, t_env *env, char *keep, int o)
 {
 	t_env		*var;
-	size_t		len;
-	char		*add;
-	char		*line;
-	char		**cut;
-	char		*tmp;
+	t_ec		e;
 
-	line = "\0";
-	len = 0;
-	add = NULL;
-	cut = strsplit_two_c(rd, '\t', ' ');
-	var = var_and_len(cut, env, &len);
-	if ((add = give_echo(add, &o, rd, len, var)) == NULL)
+	e.line = "\0";
+	e.len = 0;
+	e.add = NULL;
+	e.cut = strsplit_two_c(rd, '\t', ' ');
+	var = var_and_len(e.cut, env, &e.len);
+	if ((e.add = give_echo(e, &o, rd, var)) == NULL)
 		return ;
-	tmp = ft_strjoin(keep, add);
+	e.tmp = ft_strjoin(keep, e.add);
 	if (o == 0)
 	{
-		tmp == NULL ? ft_putstr(add) : ft_putstr(tmp);
+		e.tmp == NULL ? ft_putstr(e.add) : ft_putstr(e.tmp);
+		free_echo(&e.add, &e.tmp, &e.cut, &var);
+	}
 	else
 	{
 		o == 1 ? ft_putstr("quote> ") : ft_putstr("dquote> ");
-		get_next_line(0, &line);
-		b_echo_w(line, env, (tmp == NULL ? add : tmp), o);
-		free_echo(&add, &tmp, &cut, &var);
-		if (ft_strcmp(line, "\0") != 0)
-			ft_strdel(&line);
+		get_next_line(0, &e.line);
+		b_echo_w(e.line, env, (e.tmp == NULL ? e.add : e.tmp), o);
+		free_echo(&e.add, &e.tmp, &e.cut, &var);
+		if (ft_strcmp(e.line, "\0") != 0)
+			ft_strdel(&e.line);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: ltran <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/06/26 12:13:36 by ltran             #+#    #+#             */
-/*   Updated: 2017/09/18 12:20:32 by ltran            ###   ########.fr       */
+/*   Updated: 2017/09/18 12:41:04 by ltran            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,11 @@ typedef struct		s_env
 
 typedef struct		s_ec
 {
-	char			*name;
-	char			*ctn;
-	struct s_env	*next;
+	size_t		len;
+	char		*add;
+	char		*line;
+	char		**cut;
+	char		*tmp;
 }					t_ec;
 
 int					free_for_exit(char *line, char **cut, t_env *env);
@@ -68,7 +70,7 @@ t_env				*exec_cmd(char *line, t_env *env, char **cut, int *i);
 char				**list_to_tab(t_env *env, char **tab_env);
 void				*cpy(char *dst, char *src);
 
-char				*give_echo(char *join2, int *o, char *rd, size_t i, t_env *var);
+char				*give_echo(t_ec e, int *o, char *rd, t_env *var);
 void				b_echo_w(char *rd, t_env *env, char *line, int o);
 
 #endif
